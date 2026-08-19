@@ -6,5 +6,31 @@
   },
   "newProjectRoot": "projects",
   "projects": {
+    "simple-table": {
+      "projectType": "library",
+      "root": "projects/simple-table",
+      "sourceRoot": "projects/simple-table/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/simple-table/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/simple-table/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/simple-table/tsconfig.spec.json"
+          }
+        }
+      }
+    }
   }
 }
