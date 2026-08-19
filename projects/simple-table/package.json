@@ -2,8 +2,9 @@
   "name": "didi-simple-table",
   "version": "0.1.0",
   "peerDependencies": {
-    "@angular/common": "^22.1.0",
-    "@angular/core": "^22.1.0"
+    "@angular/common": "^14.0.0",
+    "@angular/core": "^14.0.0"
+  },
   },
   "dependencies": {
     "tslib": "^2.3.0"

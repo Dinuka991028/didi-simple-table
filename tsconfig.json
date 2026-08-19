@@ -1,26 +1,41 @@
-/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
-/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
+
+    "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+
     "skipLibCheck": true,
-    "isolatedModules": true,
+
     "experimentalDecorators": true,
     "importHelpers": true,
+
+    "moduleResolution": "node",
+    "target": "ES2020",
+    "module": "ES2020",
+
+    "lib": [
+      "ES2020",
+      "DOM"
+    ],
+
     "paths": {
-      "simple-table": ["./dist/simple-table"]
-    },
-    "target": "ES2022",
-    "module": "preserve"
+      "simple-table": [
+        "./dist/simple-table"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
   },
   "files": [],
   "references": [

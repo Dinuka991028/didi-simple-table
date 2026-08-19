@@ -4,26 +4,18 @@
 
     <thead>
     <tr>
-      @for (column of columns; track column.key) {
-      <th>
+      <th *ngFor="let column of columns">
         {{ column.label }}
       </th>
-      }
     </tr>
     </thead>
 
     <tbody>
-    @for (row of data; track $index) {
-    <tr>
-
-      @for (column of columns; track column.key) {
-      <td>
+    <tr *ngFor="let row of data">
+      <td *ngFor="let column of columns">
         {{ row[column.key] }}
       </td>
-      }
-
     </tr>
-    }
     </tbody>
 
   </table>

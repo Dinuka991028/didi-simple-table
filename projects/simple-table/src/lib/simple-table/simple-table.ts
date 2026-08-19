@@ -7,9 +7,8 @@ export interface TableColumn {
 
 @Component({
   selector: 'simple-table',
-  standalone: true,
   templateUrl: './simple-table.html',
-  styleUrl: './simple-table.css'
+  styleUrls: ['./simple-table.css']
 })
 export class SimpleTableComponent {
 

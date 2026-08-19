@@ -13,7 +13,10 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular/build:ng-packagr",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/simple-table/ng-package.json"
+          },
           "configurations": {
             "production": {
               "tsConfig": "projects/simple-table/tsconfig.lib.prod.json"
@@ -25,7 +28,7 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:unit-test",
+          "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "tsConfig": "projects/simple-table/tsconfig.spec.json"
           }
