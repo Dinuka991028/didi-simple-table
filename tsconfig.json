@@ -26,8 +26,8 @@
     ],
 
     "paths": {
-      "simple-table": [
-        "./dist/simple-table"
+      "didi-simple-table": [
+        "./projects/simple-table/src/public-api.ts"
       ]
     }
   },

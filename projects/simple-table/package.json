@@ -1,10 +1,24 @@
 {
   "name": "didi-simple-table",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "description": "A simple, typed table component for Angular.",
+  "keywords": [
+    "angular",
+    "table",
+    "datatable",
+    "grid"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dinuka991028/didi-simple-table.git"
+  },
+  "homepage": "https://github.com/Dinuka991028/didi-simple-table#readme",
+  "bugs": {
+    "url": "https://github.com/Dinuka991028/didi-simple-table/issues"
+  },
   "peerDependencies": {
     "@angular/common": "^14.0.0",
     "@angular/core": "^14.0.0"
-  },
   },
   "dependencies": {
     "tslib": "^2.3.0"

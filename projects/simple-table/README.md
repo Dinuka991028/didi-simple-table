@@ -1,64 +1,108 @@
-# SimpleTable
+# didi-simple-table
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.0.
+A small, typed table component for Angular 14+.
 
-## Code scaffolding
+Pass in columns and row data. The table renders headers, cells, and a horizontal scroll container when the content is wider than its parent.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+![didi-simple-table preview](../../docs/preview.png)
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Install
 
 ```bash
-ng generate --help
+npm install didi-simple-table
 ```
 
-## Building
+Peer dependencies: `@angular/core` and `@angular/common` `^14.0.0`.
 
-To build the library, run:
+## Usage
+
+Import `SimpleTableModule` in the module that will use the table.
+
+```ts
+import { NgModule } from '@angular/core';
+import { SimpleTableModule } from 'didi-simple-table';
+
+import { UsersComponent } from './users.component';
+
+@NgModule({
+  declarations: [UsersComponent],
+  imports: [SimpleTableModule]
+})
+export class UsersModule {}
+```
+
+Define a row type, then bind `columns` and `data`. `key` is checked against the row type, so typos fail at compile time.
+
+```ts
+import { Component } from '@angular/core';
+import { TableColumn } from 'didi-simple-table';
+
+interface User {
+  name: string;
+  email: string;
+  role: string;
+}
+
+@Component({
+  selector: 'app-users',
+  template: `
+    <didi-simple-table
+      [columns]="columns"
+      [data]="users"
+    ></didi-simple-table>
+  `
+})
+export class UsersComponent {
+  columns: TableColumn<User>[] = [
+    { key: 'name', label: 'Name' },
+    { key: 'email', label: 'Email' },
+    { key: 'role', label: 'Role' }
+  ];
+
+  users: User[] = [
+    { name: 'Ada Lovelace', email: 'ada@example.com', role: 'Engineer' },
+    { name: 'Alan Turing', email: 'alan@example.com', role: 'Researcher' },
+    { name: 'Grace Hopper', email: 'grace@example.com', role: 'Admiral' }
+  ];
+}
+```
+
+## API
+
+### Selector
+
+`didi-simple-table`
+
+### Inputs
+
+| Input     | Type               | Default | Description                                      |
+| --------- | ------------------ | ------- | ------------------------------------------------ |
+| `columns` | `TableColumn<T>[]` | `[]`    | Header labels and which field each column reads. |
+| `data`    | `T[]`              | `[]`    | Rows to render.                                  |
+
+### `TableColumn<T>`
+
+| Field   | Type               | Description                                  |
+| ------- | ------------------ | -------------------------------------------- |
+| `key`   | `keyof T & string` | Property on each row to show in this column. |
+| `label` | `string`           | Header text.                                 |
+
+`T` defaults to `Record<string, unknown>` if you do not pass a row type.
+
+## Local development
+
+From the workspace root, start the demo app. It imports this library from source.
 
 ```bash
-ng build simple-table
+npm start
 ```
 
-This command will compile your project, and the build artifacts will be placed in the `dist/` directory.
+Open `http://localhost:4200/`.
 
-### Publishing the Library
-
-Once the project is built, you can publish your library by following these steps:
-
-1. Navigate to the `dist` directory:
-
-   ```bash
-   cd dist/simple-table
-   ```
-
-2. Run the `npm publish` command to publish your library to the npm registry:
-   ```bash
-   npm publish
-   ```
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## Build
 
 ```bash
-ng test
+npm run build
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Publish from `dist/simple-table`.

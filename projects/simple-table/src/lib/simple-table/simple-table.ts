@@ -1,19 +1,20 @@
 import { Component, Input } from '@angular/core';
 
-export interface TableColumn {
-  key: string;
+export interface TableColumn<T> {
+  key: keyof T & string;
   label: string;
 }
 
 @Component({
-  selector: 'simple-table',
+  selector: 'didi-simple-table',
   templateUrl: './simple-table.html',
   styleUrls: ['./simple-table.css']
 })
-export class SimpleTableComponent {
+export class SimpleTableComponent<T extends object = Record<string, unknown>> {
+  @Input() data: T[] = [];
+  @Input() columns: TableColumn<T>[] = [];
 
-  @Input() data: any[] = [];
-
-  @Input() columns: TableColumn[] = [];
-
+  getCellValue(row: T, column: TableColumn<T>): unknown {
+    return (row as Record<string, unknown>)[column.key];
+  }
 }

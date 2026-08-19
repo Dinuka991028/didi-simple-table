@@ -1,23 +1,19 @@
 <div class="table-container">
-
   <table>
-
     <thead>
-    <tr>
-      <th *ngFor="let column of columns">
-        {{ column.label }}
-      </th>
-    </tr>
+      <tr>
+        <th *ngFor="let column of columns" scope="col">
+          {{ column.label }}
+        </th>
+      </tr>
     </thead>
 
     <tbody>
-    <tr *ngFor="let row of data">
-      <td *ngFor="let column of columns">
-        {{ row[column.key] }}
-      </td>
-    </tr>
+      <tr *ngFor="let row of data">
+        <td *ngFor="let column of columns">
+          {{ getCellValue(row, column) }}
+        </td>
+      </tr>
     </tbody>
-
   </table>
-
 </div>

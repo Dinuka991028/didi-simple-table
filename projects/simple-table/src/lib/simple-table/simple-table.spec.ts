@@ -1,19 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CommonModule } from '@angular/common';
 
-import { SimpleTable } from './simple-table';
+import { SimpleTableComponent } from './simple-table';
 
-describe('SimpleTable', () => {
-  let component: SimpleTable;
-  let fixture: ComponentFixture<SimpleTable>;
+describe('SimpleTableComponent', () => {
+  let component: SimpleTableComponent;
+  let fixture: ComponentFixture<SimpleTableComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SimpleTable],
+      imports: [CommonModule],
+      declarations: [SimpleTableComponent]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SimpleTable);
+    fixture = TestBed.createComponent(SimpleTableComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {

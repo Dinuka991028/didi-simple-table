@@ -1,59 +1,107 @@
-# SimpleTableWorkspace
+# didi-simple-table
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.4.
+A small, typed table component for Angular 14+.
 
-## Development server
+Pass in columns and row data. The table renders headers, cells, and a horizontal scroll container when the content is wider than its parent.
 
-To start a local development server, run:
+![didi-simple-table preview](docs/preview.png)
 
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Install
 
 ```bash
-ng generate component component-name
+npm install didi-simple-table
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Peer dependencies: `@angular/core` and `@angular/common` `^14.0.0`.
+
+## Usage
+
+Import `SimpleTableModule` in the module that will use the table.
+
+```ts
+import { NgModule } from '@angular/core';
+import { SimpleTableModule } from 'didi-simple-table';
+
+import { UsersComponent } from './users.component';
+
+@NgModule({
+  declarations: [UsersComponent],
+  imports: [SimpleTableModule]
+})
+export class UsersModule {}
+```
+
+Define a row type, then bind `columns` and `data`. `key` is checked against the row type, so typos fail at compile time.
+
+```ts
+import { Component } from '@angular/core';
+import { TableColumn } from 'didi-simple-table';
+
+interface User {
+  name: string;
+  email: string;
+  role: string;
+}
+
+@Component({
+  selector: 'app-users',
+  template: `
+    <didi-simple-table
+      [columns]="columns"
+      [data]="users"
+    ></didi-simple-table>
+  `
+})
+export class UsersComponent {
+  columns: TableColumn<User>[] = [
+    { key: 'name', label: 'Name' },
+    { key: 'email', label: 'Email' },
+    { key: 'role', label: 'Role' }
+  ];
+
+  users: User[] = [
+    { name: 'Ada Lovelace', email: 'ada@example.com', role: 'Engineer' },
+    { name: 'Alan Turing', email: 'alan@example.com', role: 'Researcher' },
+    { name: 'Grace Hopper', email: 'grace@example.com', role: 'Admiral' }
+  ];
+}
+```
+
+## API
+
+### Selector
+
+`didi-simple-table`
+
+### Inputs
+
+| Input     | Type               | Default | Description                                      |
+| --------- | ------------------ | ------- | ------------------------------------------------ |
+| `columns` | `TableColumn<T>[]` | `[]`    | Header labels and which field each column reads. |
+| `data`    | `T[]`              | `[]`    | Rows to render.                                  |
+
+### `TableColumn<T>`
+
+| Field   | Type                | Description                                      |
+| ------- | ------------------- | ------------------------------------------------ |
+| `key`   | `keyof T & string`  | Property on each row to show in this column.     |
+| `label` | `string`            | Header text.                                     |
+
+`T` defaults to `Record<string, unknown>` if you do not pass a row type.
+
+## Local development
+
+This repo is an Angular workspace. The publishable library lives in `projects/simple-table`. The demo app in `projects/demo` imports it from source so you can try changes without publishing.
 
 ```bash
-ng generate --help
+npm install
+npm start
 ```
 
-## Building
-
-To build the project run:
+Open `http://localhost:4200/`.
 
 ```bash
-ng build
+npm run build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+The library build output is written to `dist/simple-table`.
