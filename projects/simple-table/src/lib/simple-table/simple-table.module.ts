@@ -1,12 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { DidiCellDirective, DidiEmptyDirective, DidiLoadingDirective } from './simple-table.directives';
+import { DidiCellDirective, DidiEmptyDirective, DidiHeaderDirective, DidiLoadingDirective } from './simple-table.directives';
 import { SimpleTableComponent } from './simple-table';
 
 const TABLE_DIRECTIVES = [
   SimpleTableComponent,
   DidiCellDirective,
+  DidiHeaderDirective,
   DidiEmptyDirective,
   DidiLoadingDirective
 ];

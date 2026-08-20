@@ -1,10 +1,29 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { PaginationMode, TableColumn, TableSort } from 'didi-simple-table';
+import { PaginationMode, ResponsiveMode, TableColumn, TableQuery, TableSortState, TableTheme } from 'didi-simple-table';
 
 interface User {
   name: string;
   email: string;
   role: string;
+}
+
+interface Employee {
+  name: string;
+  email: string;
+  role: string;
+  salary: number;
+  status: 'Active' | 'Leave';
+  address: { city: string; country: string };
+  actions?: unknown;
+}
+
+interface Staff {
+  name: string;
+  email: string;
+  role: string;
+  team: string;
+  city: string;
+  status: string;
 }
 
 const USERS: User[] = [
@@ -19,6 +38,54 @@ const USERS: User[] = [
 ];
 
 const SAMPLE: User[] = USERS.slice(0, 3);
+
+const EMPLOYEES: Employee[] = [
+  {
+    name: 'Ada Lovelace',
+    email: 'ada@example.com',
+    role: 'Engineer',
+    salary: 140000,
+    status: 'Active',
+    address: { city: 'London', country: 'UK' }
+  },
+  {
+    name: 'Alan Turing',
+    email: 'alan@example.com',
+    role: 'Researcher',
+    salary: 125000,
+    status: 'Leave',
+    address: { city: 'Manchester', country: 'UK' }
+  },
+  {
+    name: 'Grace Hopper',
+    email: 'grace@example.com',
+    role: 'Admiral',
+    salary: 160000,
+    status: 'Active',
+    address: { city: 'New York', country: 'USA' }
+  }
+];
+
+const STAFF: Staff[] = [
+  { name: 'Ada Lovelace', email: 'ada@example.com', role: 'Engineer', team: 'Core', city: 'London', status: 'Active' },
+  { name: 'Alan Turing', email: 'alan@example.com', role: 'Researcher', team: 'Labs', city: 'Manchester', status: 'Active' },
+  { name: 'Grace Hopper', email: 'grace@example.com', role: 'Admiral', team: 'Navy', city: 'New York', status: 'Leave' }
+];
+
+type Rank = 'junior' | 'mid' | 'senior';
+
+interface SortPerson {
+  name: string;
+  age: number;
+  hired: Date;
+  rank: Rank;
+}
+
+const RANK_ORDER: Record<Rank, number> = {
+  junior: 0,
+  mid: 1,
+  senior: 2
+};
 
 type StatusView = 'data' | 'empty' | 'loading';
 
@@ -35,19 +102,45 @@ export class AppComponent implements OnInit, OnDestroy {
   ];
   basicUsers = SAMPLE;
 
-  cellColumns: TableColumn<User>[] = this.basicColumns;
-  cellUsers = SAMPLE;
+  cellColumns: TableColumn<Employee>[] = [
+    { key: 'name', label: 'Name' },
+    { key: 'address.city', label: 'City' },
+    {
+      key: 'salary',
+      label: 'Salary',
+      format: (value) => '$' + Number(value).toLocaleString()
+    },
+    { key: 'status', label: 'Status' },
+    { key: 'actions', label: 'Actions', sortable: false }
+  ];
+  cellUsers = EMPLOYEES;
+  edited: string | null = null;
 
   statusView: StatusView = 'data';
   statusColumns: TableColumn<User>[] = this.basicColumns;
 
-  sortColumns: TableColumn<User>[] = [
-    { key: 'name', label: 'Name' },
-    { key: 'email', label: 'Email', sortable: false },
-    { key: 'role', label: 'Role' }
+  sortUsers: SortPerson[] = [
+    { name: 'Ada Lovelace', age: 36, hired: new Date('2019-07-12'), rank: 'senior' },
+    { name: 'Alan Turing', age: 41, hired: new Date('2021-01-04'), rank: 'mid' },
+    { name: 'Grace Hopper', age: 29, hired: new Date('2018-03-22'), rank: 'junior' }
   ];
-  sortUsers = SAMPLE;
-  headerSort: TableSort<User> | null = null;
+  sortColumns: TableColumn<SortPerson>[] = [
+    { key: 'name', label: 'Name', sortType: 'string' },
+    { key: 'age', label: 'Age', sortType: 'number' },
+    {
+      key: 'hired',
+      label: 'Hired',
+      sortType: 'date',
+      format: (value) => (value instanceof Date ? value.toISOString().slice(0, 10) : value)
+    },
+    {
+      key: 'rank',
+      label: 'Rank',
+      compare: (left, right) => RANK_ORDER[left as Rank] - RANK_ORDER[right as Rank]
+    }
+  ];
+  headerSort: TableSortState<SortPerson> = null;
+  multiSort = false;
   stickyUsers = USERS;
 
   selectionMode: false | 'single' | 'multiple' = 'single';
@@ -59,10 +152,37 @@ export class AppComponent implements OnInit, OnDestroy {
   loading = false;
   page = 1;
   pageSize = 3;
+  pageSizeOptions = [3, 5, 10];
   total = 0;
-  sort: TableSort<User> | null = null;
+  search = '';
+  keepPage = false;
+  sort: TableSortState<User> = null;
+  lastQuery: TableQuery<User> | null = null;
   users: User[] = [];
-  pageColumns: TableColumn<User>[] = this.sortColumns;
+  pageColumns: TableColumn<User>[] = [
+    { key: 'name', label: 'Name' },
+    { key: 'email', label: 'Email', sortable: false },
+    { key: 'role', label: 'Role' }
+  ];
+  tableTheme: TableTheme = 'inherit';
+  staffColumns: TableColumn<Staff>[] = [
+    { key: 'name', label: 'Name', collapsible: false },
+    { key: 'email', label: 'Email' },
+    { key: 'role', label: 'Role' },
+    { key: 'team', label: 'Team' },
+    { key: 'city', label: 'City', hidden: true },
+    { key: 'status', label: 'Status' }
+  ];
+  staffRows = STAFF;
+  mobileMode: ResponsiveMode = 'stack';
+  mobileColumns: TableColumn<Staff>[] = [
+    { key: 'name', label: 'Name' },
+    { key: 'email', label: 'Email' },
+    { key: 'role', label: 'Role' },
+    { key: 'team', label: 'Team', hideOnMobile: true },
+    { key: 'city', label: 'City', hideOnMobile: true },
+    { key: 'status', label: 'Status' }
+  ];
 
   private loadHandle: ReturnType<typeof setTimeout> | null = null;
 
@@ -102,8 +222,22 @@ export class AppComponent implements OnInit, OnDestroy {
     this.statusView = view;
   }
 
-  onHeaderSort(sort: TableSort<User> | null): void {
+  get sortLabel(): string {
+    if (!this.headerSort) {
+      return 'null';
+    }
+
+    const sorts = Array.isArray(this.headerSort) ? this.headerSort : [this.headerSort];
+    return sorts.map((item) => item.key + ' / ' + item.direction).join(', ');
+  }
+
+  onHeaderSort(sort: TableSortState<SortPerson>): void {
     this.headerSort = sort;
+  }
+
+  setMultiSort(multiSort: boolean): void {
+    this.multiSort = multiSort;
+    this.headerSort = null;
   }
 
   setSelectionMode(mode: false | 'single' | 'multiple'): void {
@@ -116,6 +250,37 @@ export class AppComponent implements OnInit, OnDestroy {
     this.clicked = user;
   }
 
+  editEmployee(row: Employee): void {
+    this.edited = row.name;
+  }
+
+  get queryLabel(): string {
+    if (!this.lastQuery) {
+      return 'Interact with the table to emit a query.';
+    }
+
+    const sort = this.lastQuery.sort
+      ? (Array.isArray(this.lastQuery.sort) ? this.lastQuery.sort : [this.lastQuery.sort])
+          .map((item) => item.key + ':' + item.direction)
+          .join(', ')
+      : 'null';
+
+    return (
+      'page ' +
+      this.lastQuery.page +
+      ', pageSize ' +
+      this.lastQuery.pageSize +
+      ', search "' +
+      this.lastQuery.search +
+      '", sort ' +
+      sort
+    );
+  }
+
+  get pagingEmptyMessage(): string {
+    return this.search.trim() ? 'No matching rows' : 'No data';
+  }
+
   setPagination(pagination: PaginationMode): void {
     if (this.pagination === pagination) {
       return;
@@ -124,6 +289,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.pagination = pagination;
     this.page = 1;
     this.sort = null;
+    this.search = '';
     this.applyMode();
   }
 
@@ -139,19 +305,19 @@ export class AppComponent implements OnInit, OnDestroy {
     this.applyMode();
   }
 
-  onPageChange(page: number): void {
-    this.page = page;
+  onQueryChange(query: TableQuery<User>): void {
+    this.page = query.page;
+    this.pageSize = query.pageSize ?? this.pageSize;
+    this.sort = query.sort;
+    this.search = query.search;
+    this.lastQuery = query;
     if (this.isServer) {
       this.load();
     }
   }
 
-  onSortChange(sort: TableSort<User> | null): void {
-    this.sort = sort;
-    this.page = 1;
-    if (this.isServer) {
-      this.load();
-    }
+  setKeepPage(keepPage: boolean): void {
+    this.keepPage = keepPage;
   }
 
   private applyMode(): void {
@@ -171,7 +337,14 @@ export class AppComponent implements OnInit, OnDestroy {
     this.loading = true;
 
     this.loadHandle = setTimeout(() => {
-      const source = this.empty ? [] : sortUsers([...USERS], this.sort);
+      let source = this.empty ? [] : [...USERS];
+      const query = this.search.trim().toLowerCase();
+      if (query) {
+        source = source.filter((user) =>
+          [user.name, user.email, user.role].some((value) => value.toLowerCase().includes(query))
+        );
+      }
+      source = sortUsers(source, this.sort);
       this.total = source.length;
       const start = (this.page - 1) * this.pageSize;
       this.users = source.slice(start, start + this.pageSize);
@@ -188,16 +361,25 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 }
 
-function sortUsers(rows: User[], sort: TableSort<User> | null): User[] {
+function sortUsers(rows: User[], sort: TableSortState<User>): User[] {
   if (!sort) {
     return rows;
   }
 
+  const sorts = Array.isArray(sort) ? sort : [sort];
   return [...rows].sort((left, right) => {
-    const result = String(left[sort.key]).localeCompare(String(right[sort.key]), undefined, {
-      numeric: true,
-      sensitivity: 'base'
-    });
-    return sort.direction === 'asc' ? result : -result;
+    for (const spec of sorts) {
+      const key = spec.key as keyof User;
+      const result = String(left[key]).localeCompare(String(right[key]), undefined, {
+        numeric: true,
+        sensitivity: 'base'
+      });
+      const ordered = spec.direction === 'asc' ? result : -result;
+      if (ordered !== 0) {
+        return ordered;
+      }
+    }
+
+    return 0;
   });
 }

@@ -2,6 +2,41 @@
   class="table-wrap"
   [class.has-sticky]="stickyHeader"
 >
+  <div *ngIf="searchable || columnCollapse" class="table-toolbar">
+    <label *ngIf="searchable" class="table-search">
+      <span class="sr-only">{{ searchPlaceholder }}</span>
+      <input
+        type="search"
+        [placeholder]="searchPlaceholder"
+        [value]="search"
+        [disabled]="loading"
+        (input)="onSearchInput($event)"
+      />
+    </label>
+    <div *ngIf="columnCollapse" class="column-menu">
+      <button
+        type="button"
+        class="column-menu-toggle"
+        [attr.aria-expanded]="columnMenuOpen"
+        aria-haspopup="true"
+        (click)="toggleColumnMenu(); $event.stopPropagation()"
+      >
+        {{ columnMenuLabel }}
+      </button>
+      <div *ngIf="columnMenuOpen" class="column-menu-panel" role="group" aria-label="Visible columns">
+        <label *ngFor="let column of columns" class="column-menu-item">
+          <input
+            type="checkbox"
+            [checked]="!isCollapsed(column)"
+            [disabled]="!canToggleColumn(column)"
+            (change)="toggleColumnHidden(column, $event)"
+          />
+          <span>{{ column.label }}</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
   <div
     class="table-container"
     [class.has-sticky]="stickyHeader"
@@ -25,21 +60,44 @@
               (change)="toggleAllVisible($event)"
             />
           </th>
-          <th *ngFor="let column of columns" scope="col" [attr.aria-sort]="ariaSort(column)">
-            <button
-              *ngIf="isSortable(column); else staticHeader"
-              type="button"
-              class="sort-button"
-              [disabled]="loading"
-              [attr.aria-label]="sortButtonLabel(column)"
-              (click)="toggleSort(column)"
-            >
-              <span>{{ column.label }}</span>
-              <span class="sort-icon" [class.is-active]="sort?.key === column.key" aria-hidden="true">{{
-                sortIcon(column)
-              }}</span>
-            </button>
-            <ng-template #staticHeader>{{ column.label }}</ng-template>
+          <th *ngFor="let column of visibleColumns" scope="col" [attr.aria-sort]="ariaSort(column)">
+            <div class="th-inner">
+              <button
+                *ngIf="isSortable(column); else staticHeader"
+                type="button"
+                class="sort-button"
+                [disabled]="loading"
+                [attr.aria-label]="sortButtonLabel(column)"
+                (click)="toggleSort(column)"
+              >
+                <ng-container *ngIf="getHeaderTemplate(column) as headerTemplate; else defaultSortLabel">
+                  <ng-container *ngTemplateOutlet="headerTemplate; context: headerContext(column)"></ng-container>
+                </ng-container>
+                <ng-template #defaultSortLabel>
+                  <span>{{ column.label }}</span>
+                </ng-template>
+                <span class="sort-icon" [class.is-active]="sortIndex(column) >= 0" aria-hidden="true">{{
+                  sortIcon(column)
+                }}</span>
+              </button>
+              <ng-template #staticHeader>
+                <ng-container *ngIf="getHeaderTemplate(column) as headerTemplate; else defaultHeader">
+                  <ng-container *ngTemplateOutlet="headerTemplate; context: headerContext(column)"></ng-container>
+                </ng-container>
+                <ng-template #defaultHeader>
+                  <span class="th-label">{{ column.label }}</span>
+                </ng-template>
+              </ng-template>
+              <button
+                *ngIf="canHideColumn(column)"
+                type="button"
+                class="collapse-button"
+                [attr.aria-label]="'Hide ' + column.label + ' column'"
+                (click)="hideColumn(column, $event)"
+              >
+                ×
+              </button>
+            </div>
           </th>
         </tr>
       </thead>
@@ -81,11 +139,9 @@
                 (change)="onCheckboxChange(row, $event)"
               />
             </td>
-            <td *ngFor="let column of columns">
+            <td *ngFor="let column of visibleColumns" [attr.data-label]="column.label">
               <ng-container *ngIf="getCellTemplate(column) as cellTemplate; else defaultCell">
-                <ng-container
-                  *ngTemplateOutlet="cellTemplate; context: { $implicit: row, row: row, column: column }"
-                ></ng-container>
+                <ng-container *ngTemplateOutlet="cellTemplate; context: cellContext(row, column)"></ng-container>
               </ng-container>
               <ng-template #defaultCell>{{ getCellValue(row, column) }}</ng-template>
             </td>
@@ -97,6 +153,17 @@
 
   <nav *ngIf="isPaginated && !loading && !isEmpty" class="pager" aria-label="Table pagination">
     <p class="pager-status" aria-live="polite">{{ rangeStart }}–{{ rangeEnd }} of {{ itemCount }}</p>
+    <label *ngIf="resolvedPageSizeOptions.length" class="pager-size">
+      <span>Rows</span>
+      <select
+        [value]="pageSize"
+        [disabled]="loading"
+        aria-label="Rows per page"
+        (change)="onPageSizeSelect($event)"
+      >
+        <option *ngFor="let size of resolvedPageSizeOptions" [value]="size">{{ size }}</option>
+      </select>
+    </label>
     <div class="pager-actions">
       <button
         type="button"
