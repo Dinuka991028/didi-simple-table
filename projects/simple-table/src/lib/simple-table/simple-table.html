@@ -1,6 +1,6 @@
 <div
   class="table-wrap"
-  [class.has-sticky]="stickyHeader"
+  [class.has-sticky]="stickyHeader && !isStacked"
 >
   <div *ngIf="searchable || columnCollapse" class="table-toolbar">
     <label *ngIf="searchable" class="table-search">
@@ -39,8 +39,8 @@
 
   <div
     class="table-container"
-    [class.has-sticky]="stickyHeader"
-    [style.max-height]="maxHeight"
+    [class.has-sticky]="stickyHeader && !isStacked"
+    [style.max-height]="isStacked ? null : maxHeight"
   >
     <table
       [attr.aria-busy]="loading ? true : null"
@@ -151,10 +151,10 @@
     </table>
   </div>
 
-  <nav *ngIf="isPaginated && !loading && !isEmpty" class="pager" aria-label="Table pagination">
-    <div class="pager-meta">
-      <p class="pager-status" aria-live="polite">{{ rangeStart }}–{{ rangeEnd }} of {{ itemCount }}</p>
-      <label *ngIf="resolvedPageSizeOptions.length" class="pager-size">
+  <nav *ngIf="isPaginated && !loading && !isEmpty" class="didi-pager" aria-label="Table pagination">
+    <div class="didi-pager-meta">
+      <p class="didi-pager-status" aria-live="polite">{{ rangeStart }}–{{ rangeEnd }} of {{ itemCount }}</p>
+      <label *ngIf="resolvedPageSizeOptions.length" class="didi-pager-size">
         <span>Rows</span>
         <select
           [value]="pageSize"
@@ -166,20 +166,20 @@
         </select>
       </label>
     </div>
-    <div class="pager-actions">
+    <div class="didi-pager-actions">
       <button
         type="button"
-        class="pager-prev"
+        class="didi-pager-prev"
         [disabled]="currentPage <= 1"
         aria-label="Previous page"
         (click)="goToPage(currentPage - 1)"
       >
         Previous
       </button>
-      <span class="pager-page">Page {{ currentPage }} of {{ totalPages }}</span>
+      <span class="didi-pager-page">Page {{ currentPage }} of {{ totalPages }}</span>
       <button
         type="button"
-        class="pager-next"
+        class="didi-pager-next"
         [disabled]="currentPage >= totalPages"
         aria-label="Next page"
         (click)="goToPage(currentPage + 1)"

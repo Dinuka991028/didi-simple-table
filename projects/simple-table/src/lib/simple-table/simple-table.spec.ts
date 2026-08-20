@@ -268,7 +268,7 @@ describe('SimpleTableComponent pagination', () => {
     expect(rowNames(fixture)).toEqual(['Ada', 'Grace']);
     expect(fixture.nativeElement.textContent).toContain('1–2 of 3');
 
-    const next = (fixture.nativeElement.querySelectorAll('.pager-actions button') as NodeListOf<HTMLButtonElement>)[1];
+    const next = (fixture.nativeElement.querySelectorAll('.didi-pager-actions button') as NodeListOf<HTMLButtonElement>)[1];
     next.click();
     fixture.detectChanges();
 
@@ -331,7 +331,7 @@ describe('SimpleTableComponent server pagination', () => {
     expect(rowNames(fixture)).toEqual(['Ada', 'Grace']);
     expect(fixture.nativeElement.textContent).toContain('1–2 of 3');
 
-    const next = (fixture.nativeElement.querySelectorAll('.pager-actions button') as NodeListOf<HTMLButtonElement>)[1];
+    const next = (fixture.nativeElement.querySelectorAll('.didi-pager-actions button') as NodeListOf<HTMLButtonElement>)[1];
     next.click();
     fixture.detectChanges();
 
@@ -406,7 +406,7 @@ describe('SimpleTableComponent search', () => {
   });
 
   it('resets to page 1 on search by default', () => {
-    const next = (fixture.nativeElement.querySelectorAll('.pager-actions button') as NodeListOf<HTMLButtonElement>)[1];
+    const next = (fixture.nativeElement.querySelectorAll('.didi-pager-actions button') as NodeListOf<HTMLButtonElement>)[1];
     next.click();
     fixture.detectChanges();
     expect(rowNames(fixture)).toEqual(['Alan']);
@@ -463,7 +463,7 @@ describe('SimpleTableComponent page size and page state', () => {
   it('changes how many rows are shown', () => {
     expect(rowNames(fixture)).toEqual(['Ada', 'Grace']);
 
-    const select = fixture.nativeElement.querySelector('.pager-size select') as HTMLSelectElement;
+    const select = fixture.nativeElement.querySelector('.didi-pager-size select') as HTMLSelectElement;
     select.value = '3';
     select.dispatchEvent(new Event('change'));
     fixture.detectChanges();
@@ -477,7 +477,7 @@ describe('SimpleTableComponent page size and page state', () => {
     fixture.componentInstance.resetPageOnSort = false;
     fixture.detectChanges();
 
-    const next = (fixture.nativeElement.querySelectorAll('.pager-actions button') as NodeListOf<HTMLButtonElement>)[1];
+    const next = (fixture.nativeElement.querySelectorAll('.didi-pager-actions button') as NodeListOf<HTMLButtonElement>)[1];
     next.click();
     fixture.detectChanges();
     expect(rowNames(fixture)).toEqual(['Alan']);
@@ -746,6 +746,8 @@ describe('SimpleTableComponent column collapse', () => {
       responsive="stack"
       breakpoint="4000px"
       [pageSize]="1"
+      [stickyHeader]="true"
+      maxHeight="520px"
     ></didi-simple-table>
   `
 })
@@ -796,8 +798,8 @@ describe('SimpleTableComponent responsive', () => {
     fixture.detectChanges();
 
     const root = fixture.nativeElement as HTMLElement;
-    const prev = root.querySelector('.pager-prev') as HTMLButtonElement;
-    const next = root.querySelector('.pager-next') as HTMLButtonElement;
+    const prev = root.querySelector('.didi-pager-prev') as HTMLButtonElement;
+    const next = root.querySelector('.didi-pager-next') as HTMLButtonElement;
 
     expect(root.textContent).toContain('Ada');
     expect(root.textContent).toContain('1–1 of 2');
@@ -811,6 +813,10 @@ describe('SimpleTableComponent responsive', () => {
     expect(root.textContent).toContain('2–2 of 2');
     expect(prev.disabled).toBe(false);
     expect(next.disabled).toBe(true);
+
+    const container = root.querySelector('.table-container') as HTMLElement;
+    expect(container.style.maxHeight).toBe('');
+    expect(container.classList.contains('has-sticky')).toBe(false);
   });
 });
 

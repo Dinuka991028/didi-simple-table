@@ -97,9 +97,9 @@ Set `[pageSize]` to paginate. Switch with `[pagination]="'client'"` or `[paginat
 
 `[columnCollapse]="true"` lets users hide extra columns. Set `hidden: true` on a column to start it collapsed, or `collapsible: false` to keep it always visible.
 
-On small screens, `responsive="stack"` turns each row into a labeled card when the table is narrower than `breakpoint`. `responsive="scroll"` keeps the grid and scrolls sideways; `[stickyFirstColumn]="true"` pins the first column. Set `hideOnMobile: true` on a column to drop it automatically in the narrow view.
+On small screens, `responsive="stack"` turns each row into a labeled card when the table is narrower than `breakpoint`. `maxHeight` / sticky header are ignored while stacked so the pager stays under the cards. `responsive="scroll"` keeps the grid and scrolls sideways; `[stickyFirstColumn]="true"` pins the first column. Set `hideOnMobile: true` on a column to drop it automatically in the narrow view.
 
-By default the table **inherits** the host app’s font and text color (`theme="inherit"`). Set `theme="light"` (or `dark`, `teal`, `warm`, `compact`) for a packaged look. You can still override CSS variables on `didi-simple-table`, or add a class and target inner elements (`th`, `td`, `.pager`).
+By default the table **inherits** the host app’s font and text color (`theme="inherit"`). Set `theme="light"` (or `dark`, `teal`, `warm`, `compact`) for a packaged look. You can still override CSS variables on `didi-simple-table`, or add a class and target inner elements (`th`, `td`, `.didi-pager`).
 
 ```html
 <didi-simple-table [columns]="columns" [data]="users"></didi-simple-table>
@@ -295,7 +295,7 @@ Set CSS variables on `didi-simple-table` (or a parent) to map your app tokens. V
   padding: 8px 10px;
 }
 
-.my-table .pager {
+.my-table .didi-pager {
   justify-content: flex-end;
 }
 ```
