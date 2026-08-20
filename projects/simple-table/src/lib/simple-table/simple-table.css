@@ -43,8 +43,13 @@
   overflow-x: auto;
 }
 
+.didi-simple-table .table-wrap.has-sticky {
+  background: var(--didi-surface, Canvas);
+}
+
 .didi-simple-table .table-container.has-sticky {
   overflow: auto;
+  background: var(--didi-surface, Canvas);
 }
 
 .didi-simple-table table {
@@ -95,6 +100,8 @@
   position: sticky;
   top: 0;
   z-index: 2;
+  background-color: var(--didi-surface, Canvas);
+  background-image: linear-gradient(var(--didi--header-bg), var(--didi--header-bg));
   box-shadow: 0 1px 0 var(--didi--border);
 }
 
@@ -460,25 +467,30 @@
   position: sticky;
   left: 0;
   z-index: 1;
-  background: var(--didi--surface);
+  background-color: var(--didi-surface, Canvas);
+  background-image: linear-gradient(var(--didi--surface), var(--didi--surface));
   box-shadow: 1px 0 0 var(--didi--border);
 }
 
 .didi-simple-table.didi-sticky-start th:first-child {
   z-index: 3;
-  background: var(--didi--header-bg);
+  background-color: var(--didi-surface, Canvas);
+  background-image: linear-gradient(var(--didi--header-bg), var(--didi--header-bg));
 }
 
 .didi-simple-table.didi-sticky-start tbody tr:hover td:first-child {
-  background: var(--didi--hover);
+  background-color: var(--didi-surface, Canvas);
+  background-image: linear-gradient(var(--didi--hover), var(--didi--hover));
 }
 
 .didi-simple-table.didi-sticky-start tbody tr.is-selected td:first-child {
-  background: var(--didi--selected);
+  background-color: var(--didi-surface, Canvas);
+  background-image: linear-gradient(var(--didi--selected), var(--didi--selected));
 }
 
 .didi-simple-table.didi-sticky-start tbody tr.is-selected:hover td:first-child {
-  background: var(--didi--selected-hover);
+  background-color: var(--didi-surface, Canvas);
+  background-image: linear-gradient(var(--didi--selected-hover), var(--didi--selected-hover));
 }
 
 .didi-simple-table.didi-is-stacked .table-wrap {

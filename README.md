@@ -93,7 +93,7 @@ Set `[pageSize]` to paginate. Switch with `[pagination]="'client'"` or `[paginat
 
 `(rowClick)` emits the row you clicked. `[selectable]="'single'"` or `"'multiple'"` highlights rows; bind `[(selected)]` to keep them. Use `identityKey` so selection still matches after the API returns new objects.
 
-`[stickyHeader]="true"` with `maxHeight` keeps headers visible while rows scroll. `caption` names the table for assistive tech.
+`[stickyHeader]="true"` with `maxHeight` keeps headers visible while rows scroll. Sticky headers and a sticky first column use an opaque background so rows do not show through. `caption` names the table for assistive tech.
 
 `[columnCollapse]="true"` lets users hide extra columns. Set `hidden: true` on a column to start it collapsed, or `collapsible: false` to keep it always visible.
 
