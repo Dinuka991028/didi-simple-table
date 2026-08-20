@@ -1,6 +1,6 @@
 {
   "name": "didi-simple-table",
-  "version": "0.1.1",
+  "version": "0.1.5",
   "description": "A simple, typed table component for Angular.",
   "keywords": [
     "angular",
