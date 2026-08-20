@@ -1,5 +1,5 @@
 <div class="table-container">
-  <table>
+  <table [attr.aria-busy]="loading ? true : null">
     <thead>
       <tr>
         <th *ngFor="let column of columns" scope="col">
@@ -9,11 +9,36 @@
     </thead>
 
     <tbody>
-      <tr *ngFor="let row of data">
-        <td *ngFor="let column of columns">
-          {{ getCellValue(row, column) }}
+      <tr *ngIf="loading" class="status-row">
+        <td class="status-cell" [attr.colspan]="columnCount">
+          <ng-container *ngIf="loadingTemplate; else defaultLoading">
+            <ng-container *ngTemplateOutlet="loadingTemplate"></ng-container>
+          </ng-container>
+          <ng-template #defaultLoading>{{ loadingMessage }}</ng-template>
         </td>
       </tr>
+
+      <tr *ngIf="!loading && isEmpty" class="status-row">
+        <td class="status-cell" [attr.colspan]="columnCount">
+          <ng-container *ngIf="emptyTemplate; else defaultEmpty">
+            <ng-container *ngTemplateOutlet="emptyTemplate"></ng-container>
+          </ng-container>
+          <ng-template #defaultEmpty>{{ emptyMessage }}</ng-template>
+        </td>
+      </tr>
+
+      <ng-container *ngIf="!loading && !isEmpty">
+        <tr *ngFor="let row of data">
+          <td *ngFor="let column of columns">
+            <ng-container *ngIf="getCellTemplate(column) as cellTemplate; else defaultCell">
+              <ng-container
+                *ngTemplateOutlet="cellTemplate; context: { $implicit: row, row: row, column: column }"
+              ></ng-container>
+            </ng-container>
+            <ng-template #defaultCell>{{ getCellValue(row, column) }}</ng-template>
+          </td>
+        </tr>
+      </ng-container>
     </tbody>
   </table>
 </div>

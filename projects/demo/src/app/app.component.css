@@ -40,7 +40,48 @@ h1 {
   background: #fff;
 }
 
+.panel-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
 h2 {
-  margin: 0 0 16px;
+  margin: 0;
   font-size: 18px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+}
+
+.toolbar button {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  color: #222;
+  cursor: pointer;
+}
+
+.toolbar button.active {
+  border-color: #111;
+  background: #111;
+  color: #fff;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #eef2f6;
+  font-size: 13px;
+}
+
+a {
+  color: #0b57d0;
 }

@@ -22,3 +22,12 @@ th {
 tbody tr:hover {
   background: #f5f5f5;
 }
+
+.status-row:hover {
+  background: transparent;
+}
+
+.status-cell {
+  text-align: center;
+  color: #555;
+}

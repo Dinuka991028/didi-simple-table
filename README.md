@@ -2,7 +2,7 @@
 
 A small, typed table component for Angular 14+.
 
-Pass in columns and row data. The table renders headers, cells, and a horizontal scroll container when the content is wider than its parent.
+Pass in columns and row data. The table renders headers, cells, empty and loading states, and custom cell templates. A horizontal scroll container appears when the content is wider than its parent.
 
 ![didi-simple-table preview](docs/preview.png)
 
@@ -49,10 +49,24 @@ interface User {
     <didi-simple-table
       [columns]="columns"
       [data]="users"
-    ></didi-simple-table>
+      [loading]="loading"
+    >
+      <ng-template didiCell="email" let-row>
+        <a [href]="'mailto:' + row.email">{{ row.email }}</a>
+      </ng-template>
+
+      <ng-template didiCell="role" let-row>
+        <span class="badge">{{ row.role }}</span>
+      </ng-template>
+
+      <ng-template didiEmpty>No users to show.</ng-template>
+      <ng-template didiLoading>Loading users…</ng-template>
+    </didi-simple-table>
   `
 })
 export class UsersComponent {
+  loading = false;
+
   columns: TableColumn<User>[] = [
     { key: 'name', label: 'Name' },
     { key: 'email', label: 'Email' },
@@ -67,6 +81,8 @@ export class UsersComponent {
 }
 ```
 
+Columns without a `didiCell` template still print the field value. If `loading` is true, the loading state replaces the rows. If `loading` is false and `data` is empty, the empty state is shown instead.
+
 ## API
 
 ### Selector
@@ -75,10 +91,21 @@ export class UsersComponent {
 
 ### Inputs
 
-| Input     | Type               | Default | Description                                      |
-| --------- | ------------------ | ------- | ------------------------------------------------ |
-| `columns` | `TableColumn<T>[]` | `[]`    | Header labels and which field each column reads. |
-| `data`    | `T[]`              | `[]`    | Rows to render.                                  |
+| Input            | Type               | Default        | Description                                      |
+| ---------------- | ------------------ | -------------- | ------------------------------------------------ |
+| `columns`        | `TableColumn<T>[]` | `[]`           | Header labels and which field each column reads. |
+| `data`           | `T[]`              | `[]`           | Rows to render.                                  |
+| `loading`        | `boolean`          | `false`        | When true, shows the loading state instead of rows. |
+| `emptyMessage`   | `string`           | `'No data'`    | Empty text when there is no custom `didiEmpty` content. |
+| `loadingMessage` | `string`           | `'Loading...'` | Loading text when there is no custom `didiLoading` content. |
+
+### Templates
+
+| Template                 | Context                         | Description |
+| ------------------------ | ------------------------------- | ----------- |
+| `ng-template didiCell="key"` | `let-row` (also `row`, `column`) | Custom cell for the column whose `key` matches. |
+| `ng-template didiEmpty`  | none                            | Custom empty content. Omit it, or leave it empty, to use `emptyMessage`. |
+| `ng-template didiLoading`| none                            | Custom loading content. Omit it, or leave it empty, to use `loadingMessage`. |
 
 ### `TableColumn<T>`
 

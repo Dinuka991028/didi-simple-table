@@ -7,21 +7,37 @@ interface User {
   role: string;
 }
 
+const USERS: User[] = [
+  { name: 'Ada Lovelace', email: 'ada@example.com', role: 'Engineer' },
+  { name: 'Alan Turing', email: 'alan@example.com', role: 'Researcher' },
+  { name: 'Grace Hopper', email: 'grace@example.com', role: 'Admiral' }
+];
+
+type DemoView = 'data' | 'empty' | 'loading';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  view: DemoView = 'data';
+
   columns: TableColumn<User>[] = [
     { key: 'name', label: 'Name' },
     { key: 'email', label: 'Email' },
     { key: 'role', label: 'Role' }
   ];
 
-  users: User[] = [
-    { name: 'Ada Lovelace', email: 'ada@example.com', role: 'Engineer' },
-    { name: 'Alan Turing', email: 'alan@example.com', role: 'Researcher' },
-    { name: 'Grace Hopper', email: 'grace@example.com', role: 'Admiral' }
-  ];
+  get users(): User[] {
+    return this.view === 'empty' ? [] : USERS;
+  }
+
+  get loading(): boolean {
+    return this.view === 'loading';
+  }
+
+  show(view: DemoView): void {
+    this.view = view;
+  }
 }

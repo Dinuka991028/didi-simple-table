@@ -9,7 +9,25 @@
   </header>
 
   <section class="panel">
-    <h2>Users</h2>
-    <didi-simple-table [columns]="columns" [data]="users"></didi-simple-table>
+    <div class="panel-header">
+      <h2>Users</h2>
+      <div class="toolbar" role="group" aria-label="Table state">
+        <button type="button" [class.active]="view === 'data'" (click)="show('data')">Data</button>
+        <button type="button" [class.active]="view === 'empty'" (click)="show('empty')">Empty</button>
+        <button type="button" [class.active]="view === 'loading'" (click)="show('loading')">Loading</button>
+      </div>
+    </div>
+
+    <didi-simple-table [columns]="columns" [data]="users" [loading]="loading">
+      <ng-template didiCell="email" let-row>
+        <a [href]="'mailto:' + row.email">{{ row.email }}</a>
+      </ng-template>
+
+      <ng-template didiCell="role" let-row>
+        <span class="badge">{{ row.role }}</span>
+      </ng-template>
+
+
+    </didi-simple-table>
   </section>
 </main>
