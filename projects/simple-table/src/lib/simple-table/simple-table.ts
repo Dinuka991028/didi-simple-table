@@ -63,6 +63,7 @@ export {
     '[class.didi-theme-warm]': 'resolvedTheme === "warm"',
     '[class.didi-theme-compact]': 'resolvedTheme === "compact"',
     '[class.didi-is-stacked]': 'isStacked',
+    '[class.didi-is-narrow]': 'isNarrow',
     '[class.didi-sticky-start]': 'stickyFirstColumn && !isStacked'
   }
 })

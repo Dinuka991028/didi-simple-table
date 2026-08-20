@@ -69,7 +69,12 @@ const EMPLOYEES: Employee[] = [
 const STAFF: Staff[] = [
   { name: 'Ada Lovelace', email: 'ada@example.com', role: 'Engineer', team: 'Core', city: 'London', status: 'Active' },
   { name: 'Alan Turing', email: 'alan@example.com', role: 'Researcher', team: 'Labs', city: 'Manchester', status: 'Active' },
-  { name: 'Grace Hopper', email: 'grace@example.com', role: 'Admiral', team: 'Navy', city: 'New York', status: 'Leave' }
+  { name: 'Grace Hopper', email: 'grace@example.com', role: 'Admiral', team: 'Navy', city: 'New York', status: 'Leave' },
+  { name: 'Katherine Johnson', email: 'katherine@example.com', role: 'Mathematician', team: 'Flight', city: 'White Sulphur Springs', status: 'Active' },
+  { name: 'Margaret Hamilton', email: 'margaret@example.com', role: 'Engineer', team: 'Apollo', city: 'Cambridge', status: 'Active' },
+  { name: 'Dorothy Vaughan', email: 'dorothy@example.com', role: 'Mathematician', team: 'NACA', city: 'Hampton', status: 'Leave' },
+  { name: 'Mary Jackson', email: 'mary@example.com', role: 'Engineer', team: 'NACA', city: 'Hampton', status: 'Active' },
+  { name: 'Tim Berners-Lee', email: 'tim@example.com', role: 'Inventor', team: 'Web', city: 'London', status: 'Active' }
 ];
 
 type Rank = 'junior' | 'mid' | 'senior';
@@ -148,6 +153,7 @@ export class AppComponent implements OnInit, OnDestroy {
   clicked: User | null = null;
 
   pagination: PaginationMode = 'client';
+  pagingLayout: 'table' | 'cards' = 'table';
   empty = false;
   loading = false;
   page = 1;

@@ -204,6 +204,14 @@
   background: var(--didi--pager-bg);
 }
 
+.didi-simple-table .pager-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  min-width: 0;
+}
+
 .didi-simple-table .pager-status,
 .didi-simple-table .pager-page {
   margin: 0;
@@ -221,6 +229,8 @@
 }
 
 .didi-simple-table .pager-size select {
+  box-sizing: border-box;
+  max-width: 100%;
   padding: 6px 8px;
   border: 1px solid var(--didi--border);
   border-radius: 8px;
@@ -237,11 +247,17 @@
 
 .didi-simple-table .pager-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
+  margin-left: auto;
+  min-width: 0;
 }
 
 .didi-simple-table .pager-actions button {
+  box-sizing: border-box;
+  flex: none;
   padding: 6px 12px;
   border: 1px solid var(--didi--border);
   border-radius: 8px;
@@ -249,6 +265,7 @@
   color: var(--didi--text);
   font: inherit;
   font-size: 13px;
+  white-space: nowrap;
   cursor: pointer;
 }
 
@@ -568,10 +585,6 @@
 }
 
 .didi-simple-table.didi-is-stacked .pager {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 10px;
   margin-top: 12px;
   padding: 12px 0 0;
   border: 0;
@@ -580,28 +593,49 @@
   background: transparent;
 }
 
-.didi-simple-table.didi-is-stacked .pager-status,
-.didi-simple-table.didi-is-stacked .pager-page {
-  text-align: center;
+.didi-simple-table.didi-is-narrow .pager {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
 }
 
-.didi-simple-table.didi-is-stacked .pager-size {
-  justify-content: center;
-}
-
-.didi-simple-table.didi-is-stacked .pager-actions {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 8px;
+.didi-simple-table.didi-is-narrow .pager-meta {
+  justify-content: space-between;
   width: 100%;
 }
 
-.didi-simple-table.didi-is-stacked .pager-actions .pager-page {
-  align-self: center;
+.didi-simple-table.didi-is-narrow .pager-status {
+  min-width: 0;
+}
+
+.didi-simple-table.didi-is-narrow .pager-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    'page page'
+    'prev next';
+  gap: 8px;
+  width: 100%;
+  margin-left: 0;
+}
+
+.didi-simple-table.didi-is-narrow .pager-page {
+  grid-area: page;
+  justify-self: center;
+  text-align: center;
   white-space: nowrap;
 }
 
-.didi-simple-table.didi-is-stacked .pager-actions button {
+.didi-simple-table.didi-is-narrow .pager-prev {
+  grid-area: prev;
+}
+
+.didi-simple-table.didi-is-narrow .pager-next {
+  grid-area: next;
+}
+
+.didi-simple-table.didi-is-narrow .pager-actions button {
   width: 100%;
+  min-width: 0;
   min-height: 40px;
 }

@@ -745,6 +745,7 @@ describe('SimpleTableComponent column collapse', () => {
       [data]="data"
       responsive="stack"
       breakpoint="4000px"
+      [pageSize]="1"
     ></didi-simple-table>
   `
 })
@@ -753,7 +754,10 @@ class StackHostComponent {
     { key: 'name', label: 'Name' },
     { key: 'email', label: 'Email', hideOnMobile: true }
   ];
-  data: User[] = [{ name: 'Ada', email: 'ada@example.com' }];
+  data: User[] = [
+    { name: 'Ada', email: 'ada@example.com' },
+    { name: 'Grace', email: 'grace@example.com' }
+  ];
 }
 
 describe('SimpleTableComponent responsive', () => {
@@ -772,9 +776,41 @@ describe('SimpleTableComponent responsive', () => {
     fixture.detectChanges();
 
     expect(table.classList.contains('didi-is-stacked')).toBe(true);
+    expect(table.classList.contains('didi-is-narrow')).toBe(true);
     expect(table.textContent).toContain('Ada');
     expect(table.textContent).not.toContain('ada@example.com');
     expect(table.querySelector('td')?.getAttribute('data-label')).toBe('Name');
+  });
+
+  it('keeps pager prev/next usable in the stacked card layout', async () => {
+    await TestBed.configureTestingModule({
+      imports: [CommonModule],
+      declarations: [StackHostComponent, SimpleTableComponent]
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(StackHostComponent);
+    fixture.detectChanges();
+
+    const component = fixture.debugElement.children[0].componentInstance as SimpleTableComponent<User>;
+    component.isNarrow = true;
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const prev = root.querySelector('.pager-prev') as HTMLButtonElement;
+    const next = root.querySelector('.pager-next') as HTMLButtonElement;
+
+    expect(root.textContent).toContain('Ada');
+    expect(root.textContent).toContain('1–1 of 2');
+    expect(prev.disabled).toBe(true);
+    expect(next.disabled).toBe(false);
+
+    next.click();
+    fixture.detectChanges();
+
+    expect(root.textContent).toContain('Grace');
+    expect(root.textContent).toContain('2–2 of 2');
+    expect(prev.disabled).toBe(false);
+    expect(next.disabled).toBe(true);
   });
 });
 
