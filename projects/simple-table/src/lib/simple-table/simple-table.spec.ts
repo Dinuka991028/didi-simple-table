@@ -114,3 +114,260 @@ describe('SimpleTableComponent blank status templates', () => {
     expect(fixture.nativeElement.textContent).toContain('Loading...');
   });
 });
+
+@Component({
+  template: `<didi-simple-table [columns]="columns" [data]="data" [sortable]="true"></didi-simple-table>`
+})
+class SortHostComponent {
+  columns: TableColumn<User>[] = [
+    { key: 'name', label: 'Name' },
+    { key: 'email', label: 'Email' }
+  ];
+  data: User[] = [
+    { name: 'Grace', email: 'grace@example.com' },
+    { name: 'Ada', email: 'ada@example.com' }
+  ];
+}
+
+describe('SimpleTableComponent sorting', () => {
+  let fixture: ComponentFixture<SortHostComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [CommonModule],
+      declarations: [SortHostComponent, SimpleTableComponent]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(SortHostComponent);
+    fixture.detectChanges();
+  });
+
+  it('cycles ascending, descending, then original order', () => {
+    const button = fixture.nativeElement.querySelector('.sort-button') as HTMLButtonElement;
+
+    button.click();
+    fixture.detectChanges();
+    expect(rowNames(fixture)).toEqual(['Ada', 'Grace']);
+
+    button.click();
+    fixture.detectChanges();
+    expect(rowNames(fixture)).toEqual(['Grace', 'Ada']);
+
+    button.click();
+    fixture.detectChanges();
+    expect(rowNames(fixture)).toEqual(['Grace', 'Ada']);
+  });
+});
+
+function rowNames(fixture: ComponentFixture<unknown>): string[] {
+  const rows = Array.from(fixture.nativeElement.querySelectorAll('tbody tr')) as HTMLElement[];
+  return rows.map((row) => row.querySelector('td')?.textContent?.trim() ?? '');
+}
+
+@Component({
+  template: `<didi-simple-table [columns]="columns" [data]="data" [pageSize]="2"></didi-simple-table>`
+})
+class PageHostComponent {
+  columns: TableColumn<User>[] = [
+    { key: 'name', label: 'Name' },
+    { key: 'email', label: 'Email' }
+  ];
+  data: User[] = [
+    { name: 'Ada', email: 'ada@example.com' },
+    { name: 'Grace', email: 'grace@example.com' },
+    { name: 'Alan', email: 'alan@example.com' }
+  ];
+}
+
+describe('SimpleTableComponent pagination', () => {
+  let fixture: ComponentFixture<PageHostComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [CommonModule],
+      declarations: [PageHostComponent, SimpleTableComponent]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(PageHostComponent);
+    fixture.detectChanges();
+  });
+
+  it('shows the first page, then the next page', () => {
+    expect(rowNames(fixture)).toEqual(['Ada', 'Grace']);
+    expect(fixture.nativeElement.textContent).toContain('1–2 of 3');
+
+    const next = (fixture.nativeElement.querySelectorAll('.pager-actions button') as NodeListOf<HTMLButtonElement>)[1];
+    next.click();
+    fixture.detectChanges();
+
+    expect(rowNames(fixture)).toEqual(['Alan']);
+    expect(fixture.nativeElement.textContent).toContain('3–3 of 3');
+  });
+});
+
+@Component({
+  template: `
+    <didi-simple-table
+      [columns]="columns"
+      [data]="data"
+      pagination="server"
+      [pageSize]="2"
+      [page]="page"
+      [total]="total"
+      (pageChange)="onPage($event)"
+    ></didi-simple-table>
+  `
+})
+class ServerPageHostComponent {
+  columns: TableColumn<User>[] = [
+    { key: 'name', label: 'Name' },
+    { key: 'email', label: 'Email' }
+  ];
+  page = 1;
+  total = 3;
+  data: User[] = [
+    { name: 'Ada', email: 'ada@example.com' },
+    { name: 'Grace', email: 'grace@example.com' }
+  ];
+
+  onPage(page: number): void {
+    this.page = page;
+    this.data =
+      page === 1
+        ? [
+            { name: 'Ada', email: 'ada@example.com' },
+            { name: 'Grace', email: 'grace@example.com' }
+          ]
+        : [{ name: 'Alan', email: 'alan@example.com' }];
+  }
+}
+
+describe('SimpleTableComponent server pagination', () => {
+  let fixture: ComponentFixture<ServerPageHostComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [CommonModule],
+      declarations: [ServerPageHostComponent, SimpleTableComponent]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(ServerPageHostComponent);
+    fixture.detectChanges();
+  });
+
+  it('renders the provided page and uses total for the pager', () => {
+    expect(rowNames(fixture)).toEqual(['Ada', 'Grace']);
+    expect(fixture.nativeElement.textContent).toContain('1–2 of 3');
+
+    const next = (fixture.nativeElement.querySelectorAll('.pager-actions button') as NodeListOf<HTMLButtonElement>)[1];
+    next.click();
+    fixture.detectChanges();
+
+    expect(rowNames(fixture)).toEqual(['Alan']);
+    expect(fixture.nativeElement.textContent).toContain('3–3 of 3');
+  });
+});
+
+@Component({
+  template: `
+    <didi-simple-table
+      [columns]="columns"
+      [data]="data"
+      [selectable]="selectable"
+      identityKey="email"
+      [selected]="selected"
+      (selectedChange)="selected = $event"
+      (rowClick)="clicked = $event"
+    ></didi-simple-table>
+  `
+})
+class SelectHostComponent {
+  columns: TableColumn<User>[] = [
+    { key: 'name', label: 'Name' },
+    { key: 'email', label: 'Email' }
+  ];
+  data: User[] = [
+    { name: 'Ada', email: 'ada@example.com' },
+    { name: 'Grace', email: 'grace@example.com' }
+  ];
+  selectable: false | 'single' | 'multiple' = 'single';
+  selected: User[] = [];
+  clicked: User | null = null;
+}
+
+describe('SimpleTableComponent selection', () => {
+  let fixture: ComponentFixture<SelectHostComponent>;
+  let host: SelectHostComponent;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [CommonModule],
+      declarations: [SelectHostComponent, SimpleTableComponent]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(SelectHostComponent);
+    host = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('selects a single row on click and emits rowClick', () => {
+    const row = fixture.nativeElement.querySelector('tbody tr') as HTMLElement;
+    row.click();
+    fixture.detectChanges();
+
+    expect(host.clicked?.name).toBe('Ada');
+    expect(host.selected.map((user) => user.name)).toEqual(['Ada']);
+  });
+
+  it('toggles multiple rows with checkboxes', () => {
+    host.selectable = 'multiple';
+    fixture.detectChanges();
+
+    const boxes = fixture.nativeElement.querySelectorAll(
+      'tbody input[type="checkbox"]'
+    ) as NodeListOf<HTMLInputElement>;
+    boxes[0].click();
+    boxes[1].click();
+    fixture.detectChanges();
+
+    expect(host.selected.map((user) => user.name)).toEqual(['Ada', 'Grace']);
+  });
+});
+
+@Component({
+  template: `
+    <didi-simple-table
+      [columns]="columns"
+      [data]="data"
+      [stickyHeader]="true"
+      maxHeight="160px"
+      caption="People"
+    ></didi-simple-table>
+  `
+})
+class StickyHostComponent {
+  columns: TableColumn<User>[] = [
+    { key: 'name', label: 'Name' },
+    { key: 'email', label: 'Email' }
+  ];
+  data: User[] = [
+    { name: 'Ada', email: 'ada@example.com' },
+    { name: 'Grace', email: 'grace@example.com' }
+  ];
+}
+
+describe('SimpleTableComponent sticky header', () => {
+  it('exposes a caption and a sticky scroll area', async () => {
+    await TestBed.configureTestingModule({
+      imports: [CommonModule],
+      declarations: [StickyHostComponent, SimpleTableComponent]
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(StickyHostComponent);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    expect(root.querySelector('caption')?.textContent).toContain('People');
+    expect(root.querySelector('.table-container')?.classList.contains('has-sticky')).toBe(true);
+  });
+});

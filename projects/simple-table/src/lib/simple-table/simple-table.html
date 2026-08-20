@@ -1,44 +1,120 @@
-<div class="table-container">
-  <table [attr.aria-busy]="loading ? true : null">
-    <thead>
-      <tr>
-        <th *ngFor="let column of columns" scope="col">
-          {{ column.label }}
-        </th>
-      </tr>
-    </thead>
+<div
+  class="table-wrap"
+  [class.has-sticky]="stickyHeader"
+>
+  <div
+    class="table-container"
+    [class.has-sticky]="stickyHeader"
+    [style.max-height]="maxHeight"
+  >
+    <table
+      [attr.aria-busy]="loading ? true : null"
+      [attr.aria-rowcount]="ariaRowCount"
+      [attr.aria-colcount]="columnCount"
+    >
+      <caption *ngIf="caption" class="sr-only">{{ caption }}</caption>
+      <thead>
+        <tr>
+          <th *ngIf="isMultiple" class="select-cell" scope="col">
+            <input
+              type="checkbox"
+              [checked]="allVisibleSelected"
+              [indeterminate]="someVisibleSelected"
+              [disabled]="loading || isEmpty"
+              aria-label="Select all rows on this page"
+              (change)="toggleAllVisible($event)"
+            />
+          </th>
+          <th *ngFor="let column of columns" scope="col" [attr.aria-sort]="ariaSort(column)">
+            <button
+              *ngIf="isSortable(column); else staticHeader"
+              type="button"
+              class="sort-button"
+              [disabled]="loading"
+              [attr.aria-label]="sortButtonLabel(column)"
+              (click)="toggleSort(column)"
+            >
+              <span>{{ column.label }}</span>
+              <span class="sort-icon" [class.is-active]="sort?.key === column.key" aria-hidden="true">{{
+                sortIcon(column)
+              }}</span>
+            </button>
+            <ng-template #staticHeader>{{ column.label }}</ng-template>
+          </th>
+        </tr>
+      </thead>
 
-    <tbody>
-      <tr *ngIf="loading" class="status-row">
-        <td class="status-cell" [attr.colspan]="columnCount">
-          <ng-container *ngIf="loadingTemplate; else defaultLoading">
-            <ng-container *ngTemplateOutlet="loadingTemplate"></ng-container>
-          </ng-container>
-          <ng-template #defaultLoading>{{ loadingMessage }}</ng-template>
-        </td>
-      </tr>
-
-      <tr *ngIf="!loading && isEmpty" class="status-row">
-        <td class="status-cell" [attr.colspan]="columnCount">
-          <ng-container *ngIf="emptyTemplate; else defaultEmpty">
-            <ng-container *ngTemplateOutlet="emptyTemplate"></ng-container>
-          </ng-container>
-          <ng-template #defaultEmpty>{{ emptyMessage }}</ng-template>
-        </td>
-      </tr>
-
-      <ng-container *ngIf="!loading && !isEmpty">
-        <tr *ngFor="let row of data">
-          <td *ngFor="let column of columns">
-            <ng-container *ngIf="getCellTemplate(column) as cellTemplate; else defaultCell">
-              <ng-container
-                *ngTemplateOutlet="cellTemplate; context: { $implicit: row, row: row, column: column }"
-              ></ng-container>
+      <tbody>
+        <tr *ngIf="loading" class="status-row">
+          <td class="status-cell" [attr.colspan]="columnCount" role="status" aria-live="polite">
+            <ng-container *ngIf="loadingTemplate; else defaultLoading">
+              <ng-container *ngTemplateOutlet="loadingTemplate"></ng-container>
             </ng-container>
-            <ng-template #defaultCell>{{ getCellValue(row, column) }}</ng-template>
+            <ng-template #defaultLoading>{{ loadingMessage }}</ng-template>
           </td>
         </tr>
-      </ng-container>
-    </tbody>
-  </table>
+
+        <tr *ngIf="!loading && isEmpty" class="status-row">
+          <td class="status-cell" [attr.colspan]="columnCount" role="status" aria-live="polite">
+            <ng-container *ngIf="emptyTemplate; else defaultEmpty">
+              <ng-container *ngTemplateOutlet="emptyTemplate"></ng-container>
+            </ng-container>
+            <ng-template #defaultEmpty>{{ emptyMessage }}</ng-template>
+          </td>
+        </tr>
+
+        <ng-container *ngIf="!loading && !isEmpty">
+          <tr
+            *ngFor="let row of displayData"
+            [class.is-clickable]="isClickable"
+            [class.is-selected]="isSelected(row)"
+            [attr.aria-selected]="isSelectable ? isSelected(row) : null"
+            [attr.tabindex]="isClickable ? 0 : null"
+            (click)="onRowClick(row, $event)"
+            (keydown)="onRowKeydown(row, $event)"
+          >
+            <td *ngIf="isMultiple" class="select-cell" (click)="$event.stopPropagation()">
+              <input
+                type="checkbox"
+                [checked]="isSelected(row)"
+                aria-label="Select row"
+                (change)="onCheckboxChange(row, $event)"
+              />
+            </td>
+            <td *ngFor="let column of columns">
+              <ng-container *ngIf="getCellTemplate(column) as cellTemplate; else defaultCell">
+                <ng-container
+                  *ngTemplateOutlet="cellTemplate; context: { $implicit: row, row: row, column: column }"
+                ></ng-container>
+              </ng-container>
+              <ng-template #defaultCell>{{ getCellValue(row, column) }}</ng-template>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+  <nav *ngIf="isPaginated && !loading && !isEmpty" class="pager" aria-label="Table pagination">
+    <p class="pager-status" aria-live="polite">{{ rangeStart }}–{{ rangeEnd }} of {{ itemCount }}</p>
+    <div class="pager-actions">
+      <button
+        type="button"
+        [disabled]="currentPage <= 1"
+        aria-label="Previous page"
+        (click)="goToPage(currentPage - 1)"
+      >
+        Previous
+      </button>
+      <span class="pager-page">Page {{ currentPage }} of {{ totalPages }}</span>
+      <button
+        type="button"
+        [disabled]="currentPage >= totalPages"
+        aria-label="Next page"
+        (click)="goToPage(currentPage + 1)"
+      >
+        Next
+      </button>
+    </div>
+  </nav>
 </div>

@@ -1,11 +1,31 @@
+.table-wrap {
+  width: 100%;
+}
+
 .table-container {
   width: 100%;
   overflow-x: auto;
 }
 
+.table-container.has-sticky {
+  overflow: auto;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 th,
@@ -19,8 +39,65 @@ th {
   font-weight: 600;
 }
 
+.table-container.has-sticky th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #fff;
+  box-shadow: inset 0 -1px 0 #ddd;
+}
+
+.sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sort-button:disabled {
+  cursor: default;
+}
+
+.sort-icon {
+  color: #888;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.sort-icon.is-active {
+  color: #111;
+}
+
 tbody tr:hover {
   background: #f5f5f5;
+}
+
+tbody tr.is-clickable {
+  cursor: pointer;
+}
+
+tbody tr.is-selected {
+  background: #eef4ff;
+}
+
+tbody tr.is-selected:hover {
+  background: #e4edff;
+}
+
+.select-cell {
+  width: 42px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.select-cell input {
+  margin: 0;
 }
 
 .status-row:hover {
@@ -30,4 +107,41 @@ tbody tr:hover {
 .status-cell {
   text-align: center;
   color: #555;
+}
+
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.pager-status,
+.pager-page {
+  margin: 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.pager-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pager-actions button {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.pager-actions button:disabled {
+  cursor: default;
+  opacity: 0.5;
 }

@@ -2,7 +2,7 @@
 
 A small, typed table component for Angular 14+.
 
-Pass in columns and row data. The table renders headers, cells, empty and loading states, and custom cell templates. A horizontal scroll container appears when the content is wider than its parent.
+Pass in columns and row data. The table renders headers, cells, empty and loading states, custom cell templates, optional column sorting, pagination, row click, selection, and a sticky header. A horizontal scroll container appears when the content is wider than its parent.
 
 ![didi-simple-table preview](../../docs/preview.png)
 
@@ -50,6 +50,8 @@ interface User {
       [columns]="columns"
       [data]="users"
       [loading]="loading"
+      [sortable]="true"
+      [pageSize]="3"
     >
       <ng-template didiCell="email" let-row>
         <a [href]="'mailto:' + row.email">{{ row.email }}</a>
@@ -81,7 +83,32 @@ export class UsersComponent {
 }
 ```
 
-Columns without a `didiCell` template still print the field value. If `loading` is true, the loading state replaces the rows. If `loading` is false and `data` is empty, the empty state is shown instead.
+Columns without a `didiCell` template still print the field value. If `loading` is true, the loading state replaces the rows. If `loading` is false and `data` is empty, the empty state is shown instead. With `[sortable]="true"`, click a header to cycle ascending, descending, and the original order. Set `sortable: false` on a column to keep that header static.
+
+Set `[pageSize]` to paginate. Switch with `[pagination]="'client'"` or `[pagination]="'server'"`.
+
+- **Client:** pass the full list. The table sorts and slices it.
+- **Server:** pass one page, `[total]` from the API, and reload `data` on `(pageChange)` / `(sortChange)`.
+
+`(rowClick)` emits the row you clicked. `[selectable]="'single'"` or `"'multiple'"` highlights rows; bind `[(selected)]` to keep them. Use `identityKey` so selection still matches after the API returns new objects.
+
+`[stickyHeader]="true"` with `maxHeight` keeps headers visible while rows scroll. `caption` names the table for assistive tech.
+
+```html
+<didi-simple-table
+  [columns]="columns"
+  [data]="users"
+  [loading]="loading"
+  [sortable]="true"
+  [sort]="sort"
+  [pageSize]="10"
+  [page]="page"
+  [pagination]="pagination"
+  [total]="total"
+  (pageChange)="onPageChange($event)"
+  (sortChange)="onSortChange($event)"
+></didi-simple-table>
+```
 
 ## API
 
@@ -94,10 +121,31 @@ Columns without a `didiCell` template still print the field value. If `loading` 
 | Input            | Type               | Default        | Description                                      |
 | ---------------- | ------------------ | -------------- | ------------------------------------------------ |
 | `columns`        | `TableColumn<T>[]` | `[]`           | Header labels and which field each column reads. |
-| `data`           | `T[]`              | `[]`           | Rows to render.                                  |
+| `data`           | `T[]`              | `[]`           | Rows to render. Full list for client paging, or one page for server paging. |
 | `loading`        | `boolean`          | `false`        | When true, shows the loading state instead of rows. |
 | `emptyMessage`   | `string`           | `'No data'`    | Empty text when there is no custom `didiEmpty` content. |
 | `loadingMessage` | `string`           | `'Loading...'` | Loading text when there is no custom `didiLoading` content. |
+| `sortable`       | `boolean`          | `false`        | When true, clickable headers sort by that column. |
+| `sort`           | `TableSort<T> \| null` | `null`     | Current sort. Use with `(sortChange)` or `[(sort)]`. |
+| `pageSize`       | `number \| null`   | `null`         | Rows per page. Omit or `null` to show every row. |
+| `page`           | `number`           | `1`            | Current page (1-based). Use with `(pageChange)` or `[(page)]`. |
+| `pagination`     | `'client' \| 'server'` | `'client'` | `client` sorts and slices `data`. `server` leaves `data` as-is. |
+| `total`          | `number \| null`   | `null`         | Total row count. Required for the pager in `server` mode. |
+| `selectable`     | `false \| 'single' \| 'multiple'` | `false` | Row selection. `true` is the same as `'single'`. |
+| `selected`       | `T[]`              | `[]`           | Currently selected rows. Use with `(selectedChange)` or `[(selected)]`. |
+| `identityKey`    | `keyof T & string` | —              | Field used to compare rows after they are recreated (for example from an API). |
+| `stickyHeader`   | `boolean`          | `false`        | When true, header cells stay visible while the table body scrolls. |
+| `maxHeight`      | `string \| null`   | `null`         | Max height of the scroll area, for example `'240px'`. Use with `stickyHeader`. |
+| `caption`        | `string`           | `''`           | Accessible table name (visually hidden). |
+
+### Outputs
+
+| Output        | Type                            | Description                                      |
+| ------------- | ------------------------------- | ------------------------------------------------ |
+| `sortChange`  | `TableSort<T> \| null`          | Emits on header click. `null` means unsorted.    |
+| `pageChange`  | `number`                        | Emits when the page changes.                     |
+| `rowClick`    | `T`                             | Emits the row when the row is clicked.           |
+| `selectedChange` | `T[]`                        | Emits the selected rows.                         |
 
 ### Templates
 
@@ -111,10 +159,20 @@ Columns without a `didiCell` template still print the field value. If `loading` 
 
 | Field   | Type               | Description                                  |
 | ------- | ------------------ | -------------------------------------------- |
-| `key`   | `keyof T & string` | Property on each row to show in this column. |
-| `label` | `string`           | Header text.                                 |
+| `key`      | `keyof T & string` | Property on each row to show in this column. |
+| `label`    | `string`           | Header text.                                 |
+| `sortable` | `boolean`          | Set to `false` to disable sorting for this column when the table is sortable. |
 
 `T` defaults to `Record<string, unknown>` if you do not pass a row type.
+
+### `TableSort<T>`
+
+| Field       | Type               | Description                          |
+| ----------- | ------------------ | ------------------------------------ |
+| `key`       | `keyof T & string` | Column currently being sorted.       |
+| `direction` | `'asc' \| 'desc'`  | Sort direction.                      |
+
+`null` means the table is showing rows in the original `data` order.
 
 ## Local development
 

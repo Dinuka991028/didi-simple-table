@@ -3,31 +3,234 @@
     <p class="eyebrow">didi-simple-table</p>
     <h1>Playground</h1>
     <p class="lede">
-      This app imports the library from source. Change files in
-      <code>projects/simple-table</code> and this page reloads.
+      Live examples of every feature. The demo app imports the library from
+      <code>projects/simple-table</code>, so edits there reload this page.
     </p>
+    <nav class="toc" aria-label="Features">
+      <a href="#typed">Columns</a>
+      <a href="#cells">Custom cells</a>
+      <a href="#status">Empty &amp; loading</a>
+      <a href="#sorting">Sorting</a>
+      <a href="#rows">Rows</a>
+      <a href="#sticky">Sticky header</a>
+      <a href="#paging">Pagination</a>
+    </nav>
   </header>
 
-  <section class="panel">
-    <div class="panel-header">
-      <h2>Users</h2>
-      <div class="toolbar" role="group" aria-label="Table state">
-        <button type="button" [class.active]="view === 'data'" (click)="show('data')">Data</button>
-        <button type="button" [class.active]="view === 'empty'" (click)="show('empty')">Empty</button>
-        <button type="button" [class.active]="view === 'loading'" (click)="show('loading')">Loading</button>
-      </div>
-    </div>
+  <section id="typed" class="panel">
+    <h2>Typed columns</h2>
+    <p class="explain">
+      Pass <code>columns</code> and <code>data</code>. Each column
+      <code>key</code> must be a field on the row type, so a typo fails at
+      compile time. <code>label</code> is the header text. Cells print
+      <code>row[key]</code> unless you add a template.
+    </p>
+    <pre class="code" ngNonBindable>[columns]="columns"
+[data]="users"</pre>
+    <didi-simple-table [columns]="basicColumns" [data]="basicUsers"></didi-simple-table>
+  </section>
 
-    <didi-simple-table [columns]="columns" [data]="users" [loading]="loading">
+  <section id="cells" class="panel">
+    <h2>Custom cells</h2>
+    <p class="explain">
+      Use <code>ng-template didiCell="key"</code> to replace a column’s default
+      text. <code>let-row</code> is the row object. Columns without a template
+      still show the field value. Here Email is a mailto link and Role is a badge.
+    </p>
+    <pre class="code" ngNonBindable>&lt;ng-template didiCell="email" let-row&gt;
+  &lt;a [href]="'mailto:' + row.email"&gt;{{ row.email }}&lt;/a&gt;
+&lt;/ng-template&gt;</pre>
+    <didi-simple-table [columns]="cellColumns" [data]="cellUsers">
       <ng-template didiCell="email" let-row>
         <a [href]="'mailto:' + row.email">{{ row.email }}</a>
       </ng-template>
-
       <ng-template didiCell="role" let-row>
         <span class="badge">{{ row.role }}</span>
       </ng-template>
+    </didi-simple-table>
+  </section>
 
+  <section id="status" class="panel">
+    <div class="panel-header">
+      <h2>Empty &amp; loading</h2>
+      <div class="toolbar" role="group" aria-label="Row state">
+        <button type="button" [class.active]="statusView === 'data'" (click)="setStatus('data')">Data</button>
+        <button type="button" [class.active]="statusView === 'empty'" (click)="setStatus('empty')">Empty</button>
+        <button type="button" [class.active]="statusView === 'loading'" (click)="setStatus('loading')">Loading</button>
+      </div>
+    </div>
+    <p class="explain">
+      <code>[loading]="true"</code> replaces rows with the loading state.
+      If loading is off and <code>data</code> is empty, the empty state is shown.
+      Put content in <code>didiEmpty</code> / <code>didiLoading</code> to customize.
+      Leave those templates empty (or omit them) to use
+      <code>emptyMessage</code> (<code>No data</code>) and
+      <code>loadingMessage</code> (<code>Loading...</code>).
+    </p>
+    <pre class="code" ngNonBindable>[loading]="loading"
+&lt;ng-template didiEmpty&gt;No users to show.&lt;/ng-template&gt;
+&lt;ng-template didiLoading&gt;Loading users…&lt;/ng-template&gt;</pre>
+    <didi-simple-table [columns]="statusColumns" [data]="statusData" [loading]="statusLoading">
+      <ng-template didiEmpty>No users to show.</ng-template>
+      <ng-template didiLoading>Loading users…</ng-template>
+    </didi-simple-table>
+  </section>
 
+  <section id="sorting" class="panel">
+    <h2>Sorting</h2>
+    <p class="explain">
+      Set <code>[sortable]="true"</code> to make headers clickable. Clicks cycle
+      <strong>asc → desc → original order</strong>. The current state is
+      <code>sort</code>: <code>{{ '{' }} key, direction {{ '}' }}</code> or <code>null</code> when
+      unsorted. Bind <code>[sort]</code> and <code>(sortChange)</code> (or
+      <code>[(sort)]</code>) if the parent needs it. Set
+      <code>sortable: false</code> on a column to keep that header static. Email
+      is turned off below.
+    </p>
+    <p class="explain state">
+      Current <code>sort</code>:
+      <code>{{ headerSort ? headerSort.key + ' / ' + headerSort.direction : 'null' }}</code>
+    </p>
+    <pre class="code" ngNonBindable>[sortable]="true"
+[sort]="sort"
+(sortChange)="onSortChange($event)"
+
+{{ '{' }} key: 'email', label: 'Email', sortable: false {{ '}' }}</pre>
+    <didi-simple-table
+      [columns]="sortColumns"
+      [data]="sortUsers"
+      [sortable]="true"
+      [sort]="headerSort"
+      (sortChange)="onHeaderSort($event)"
+    ></didi-simple-table>
+  </section>
+
+  <section id="rows" class="panel">
+    <div class="panel-header">
+      <h2>Row click &amp; selection</h2>
+      <div class="toolbar" role="group" aria-label="Selection mode">
+        <button type="button" [class.active]="selectionMode === false" (click)="setSelectionMode(false)">
+          Click only
+        </button>
+        <button type="button" [class.active]="selectionMode === 'single'" (click)="setSelectionMode('single')">
+          Single
+        </button>
+        <button type="button" [class.active]="selectionMode === 'multiple'" (click)="setSelectionMode('multiple')">
+          Multiple
+        </button>
+      </div>
+    </div>
+    <p class="explain">
+      <code>(rowClick)</code> always fires when you click a row (not a link or
+      checkbox). <code>[selectable]="'single'"</code> keeps one highlighted row.
+      Click it again to clear. <code>[selectable]="'multiple'"</code> adds
+      checkboxes and a header “select this page” box. Bind
+      <code>[(selected)]</code> for the chosen rows.
+      <code>identityKey</code> compares rows by a field (here
+      <code>email</code>) so selection still works if objects are recreated.
+    </p>
+    <p class="explain state">
+      Last click:
+      <code>{{ clicked ? clicked.name : 'none' }}</code>
+      · Selected:
+      <code>{{ selectedNames ? selectedNames : 'none' }}</code>
+    </p>
+    <pre class="code" ngNonBindable>(rowClick)="onRowClick($event)"
+[selectable]="selectionMode"
+[(selected)]="selected"
+identityKey="email"</pre>
+    <didi-simple-table
+      [columns]="sortColumns"
+      [data]="sortUsers"
+      [selectable]="selectionMode"
+      [selected]="selected"
+      identityKey="email"
+      (selectedChange)="selected = $event"
+      (rowClick)="onRowClick($event)"
+    ></didi-simple-table>
+  </section>
+
+  <section id="sticky" class="panel">
+    <h2>Sticky header</h2>
+    <p class="explain">
+      <code>[stickyHeader]="true"</code> keeps column titles visible while the
+      body scrolls. Set <code>maxHeight</code> so the table itself scrolls
+      (otherwise the page would have to be tall enough). <code>caption</code> is
+      a hidden table name for screen readers. Sort buttons also announce the
+      current direction.
+    </p>
+    <pre class="code" ngNonBindable>[stickyHeader]="true"
+maxHeight="220px"
+caption="People"</pre>
+    <didi-simple-table
+      [columns]="basicColumns"
+      [data]="stickyUsers"
+      [sortable]="true"
+      [stickyHeader]="true"
+      maxHeight="220px"
+      caption="People"
+    ></didi-simple-table>
+  </section>
+
+  <section id="paging" class="panel">
+    <div class="panel-header">
+      <h2>Pagination</h2>
+      <div class="tools">
+        <div class="toolbar" role="group" aria-label="Pagination mode">
+          <button type="button" [class.active]="pagination === 'client'" (click)="setPagination('client')">
+            Client
+          </button>
+          <button type="button" [class.active]="pagination === 'server'" (click)="setPagination('server')">
+            Server
+          </button>
+        </div>
+        <div class="toolbar" role="group" aria-label="Table state">
+          <button type="button" [class.active]="!empty" (click)="showData()">Data</button>
+          <button type="button" [class.active]="empty" (click)="showEmpty()">Empty</button>
+        </div>
+      </div>
+    </div>
+    <p class="explain">
+      Set <code>[pageSize]</code> to show a pager. Switch modes with
+      <code>[pagination]="'client'"</code> or <code>[pagination]="'server'"</code>.
+    </p>
+    <ul class="explain-list">
+      <li>
+        <strong>Client</strong> — pass the full list. The table sorts and slices
+        it. You do not need <code>total</code>.
+      </li>
+      <li>
+        <strong>Server</strong> — pass only the current page plus
+        <code>[total]</code> from the API. Reload <code>data</code> on
+        <code>(pageChange)</code> and <code>(sortChange)</code>. This demo uses a
+        fake 350ms API.
+      </li>
+    </ul>
+    <pre class="code" ngNonBindable>[pagination]="pagination"
+[pageSize]="3"
+[page]="page"
+[total]="total"
+(pageChange)="onPageChange($event)"
+(sortChange)="onSortChange($event)"</pre>
+    <didi-simple-table
+      [columns]="pageColumns"
+      [data]="tableData"
+      [loading]="isServer && loading"
+      [sortable]="true"
+      [sort]="sort"
+      [pageSize]="pageSize"
+      [page]="page"
+      [pagination]="pagination"
+      [total]="isServer ? total : null"
+      (pageChange)="onPageChange($event)"
+      (sortChange)="onSortChange($event)"
+    >
+      <ng-template didiCell="email" let-row>
+        <a [href]="'mailto:' + row.email">{{ row.email }}</a>
+      </ng-template>
+      <ng-template didiCell="role" let-row>
+        <span class="badge">{{ row.role }}</span>
+      </ng-template>
     </didi-simple-table>
   </section>
 </main>

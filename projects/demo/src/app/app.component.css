@@ -1,7 +1,7 @@
 .page {
   max-width: 880px;
   margin: 0 auto;
-  padding: 48px 24px 64px;
+  padding: 48px 24px 80px;
 }
 
 .header {
@@ -25,19 +25,39 @@ h1 {
 
 .lede {
   margin: 0;
-  max-width: 52ch;
+  max-width: 56ch;
   color: #444;
 }
 
-.lede code {
+.lede code,
+.explain code,
+.explain-list code {
   font-size: 0.95em;
+}
+
+.toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 20px;
+}
+
+.toc a {
+  color: #0b57d0;
+  text-underline-offset: 3px;
 }
 
 .panel {
   padding: 24px;
+  margin-bottom: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
   background: #fff;
+}
+
+.panel:target {
+  outline: 2px solid #111;
+  outline-offset: 2px;
 }
 
 .panel-header {
@@ -46,12 +66,53 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 h2 {
-  margin: 0;
+  margin: 0 0 8px;
   font-size: 18px;
+}
+
+.panel-header h2 {
+  margin: 0;
+}
+
+.explain {
+  margin: 0 0 12px;
+  max-width: 62ch;
+  color: #444;
+  line-height: 1.5;
+}
+
+.explain.state {
+  font-size: 14px;
+}
+
+.explain-list {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  max-width: 62ch;
+  color: #444;
+  line-height: 1.5;
+}
+
+.code {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  overflow-x: auto;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  background: #f6f7f8;
+  font-size: 13px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .toolbar {
