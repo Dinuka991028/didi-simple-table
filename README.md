@@ -1,12 +1,22 @@
 # didi-simple-table
 
-A small, typed table component for Angular 14+.
+The lightweight Angular table for everyday applications.
 
-Pass in columns and row data. The table renders headers, cells, empty and loading states, custom cell and header templates, nested fields, optional column sorting, search, pagination, row click, selection, and a sticky header. A horizontal scroll container appears when the content is wider than its parent.
+[**Live Demo →**](https://dinuka991028.github.io/didi-simple-table/)
 
-![didi-simple-table preview](docs/preview.png)
+You do not need AG Grid, PrimeNG, or Angular Material for a normal CRUD/admin table. Pass in columns and row data. The table handles the rest.
 
-## Install
+- Sorting
+- Search
+- Pagination
+- Row selection
+- Row click
+- Loading state
+- Empty state
+- Custom cell templates
+- Sticky header
+- Horizontal scrolling
+- TypeScript-friendly
 
 ```bash
 npm install didi-simple-table
@@ -14,11 +24,63 @@ npm install didi-simple-table
 
 Peer dependencies: `@angular/core` and `@angular/common` `>=14.0.0 <23.0.0` (Angular 14 through 22).
 
-Supported Angular versions: **14, 15, 16, 17, 18, 19, 20, 21, 22**.
+## Quick start
 
-## Usage
+Lead with standalone. Import the table, give it a row type, then bind `columns` and `data`. `key` is checked against the row type, so typos fail at compile time.
 
-Import `SIMPLE_TABLE_IMPORTS` on the standalone component that uses the table. That array includes the table and the `didiCell` / `didiHeader` / `didiEmpty` / `didiLoading` template directives. Define a row type, then bind `columns` and `data`. `key` is checked against the row type, so typos fail at compile time. Nested fields use dotted paths such as `address.city`.
+```ts
+import { Component } from '@angular/core';
+import { SimpleTableComponent, TableColumn } from 'didi-simple-table';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  status: string;
+}
+
+@Component({
+  selector: 'app-users',
+  standalone: true,
+  imports: [SimpleTableComponent],
+  template: `
+    <didi-simple-table
+      [columns]="columns"
+      [data]="users"
+      [sortable]="true"
+      [searchable]="true"
+      [pageSize]="10"
+    ></didi-simple-table>
+  `
+})
+export class UsersComponent {
+  columns: TableColumn<User>[] = [
+    { key: 'name', label: 'Name', sortable: true },
+    { key: 'email', label: 'Email' },
+    { key: 'status', label: 'Status' }
+  ];
+
+  users: User[] = [
+    { id: 1, name: 'Ada Lovelace', email: 'ada@example.com', status: 'Active' },
+    { id: 2, name: 'Alan Turing', email: 'alan@example.com', status: 'Active' },
+    { id: 3, name: 'Grace Hopper', email: 'grace@example.com', status: 'Leave' }
+  ];
+}
+```
+
+That is the whole setup. Nested fields use dotted paths such as `address.city`.
+
+![didi-simple-table preview](https://raw.githubusercontent.com/Dinuka991028/didi-simple-table/main/docs/preview.png)
+
+## Why this table
+
+**didi-simple-table** is the simple Angular data table — not the most powerful Angular data grid.
+
+AG Grid and ngx-datatable win when you need a spreadsheet: virtualization, pinning, resizing, and enterprise features. This library is for the table you ship in an admin app: typed columns, sort, search, pagination, and templates, with no extra UI kit.
+
+## Custom cells
+
+For buttons, links, or badges, import `SIMPLE_TABLE_IMPORTS` so the `didiCell` / `didiHeader` / `didiEmpty` / `didiLoading` directives are available.
 
 ```ts
 import { Component } from '@angular/core';
@@ -86,6 +148,8 @@ import { UsersComponent } from './users.component';
 })
 export class UsersModule {}
 ```
+
+## Features
 
 Columns without a `didiCell` template still print the field value. Use `format` on a column for a simple formatter, `didiHeader` for a custom header, and `didiCell` for buttons, icons, or conditional styles. If `loading` is true, the loading state replaces the rows. If `loading` is false and `data` is empty, the empty state is shown instead. With `[sortable]="true"`, click a header to cycle ascending, descending, and the original order. Strings, numbers, and dates sort automatically; set `sortType` or `compare` when you need control. `[multiSort]="true"` sorts by more than one column. Server paging leaves `data` as-is and emits `(sortChange)` so the parent can reload.
 
@@ -260,22 +324,12 @@ didi-simple-table {
 | `filterOptions` | `{ label, value }[]` | Options when `filter` is `'select'`. |
 | `format`   | `(value, row) => unknown` | Optional formatter used when there is no `didiCell` template. |
 | `formatType` | `'number' \| 'date' \| 'currency'` | Built-in `Intl` formatting when `format` is omitted. |
-| `footer`   | `(rows) => unknown` | Footer value from the filtered/sorted rows. |
-
-### `TableColumn<T>`
-
-| Field   | Type                | Description                                      |
-| ------- | ------------------- | ------------------------------------------------ |
-| `key`      | `TableField<T>` | Field on the row, or a nested path such as `address.city`. Use a dedicated key for template-only columns (for example `actions`). |
-| `label`    | `string`           | Header text.                                 |
-| `sortable` | `boolean`          | Set to `false` to disable sorting for this column when the table is sortable. |
-| `format`   | `(value, row) => unknown` | Optional formatter used when there is no `didiCell` template. |
 | `sortType` | `'auto' \| 'string' \| 'number' \| 'date'` | How to compare this column. Default `auto` detects numbers, dates, and strings. |
 | `compare`  | `(left, right, leftRow, rightRow) => number` | Custom comparator. Return negative if `left` comes first. |
 | `hidden`   | `boolean`          | Set to `true` to start the column collapsed. |
 | `collapsible` | `boolean`       | Set to `false` to keep the column always visible when `columnCollapse` is on. |
 | `hideOnMobile` | `boolean`      | Set to `true` to hide the column when the table is narrower than `breakpoint`. |
-| `pinned`   | `boolean \| 'start' \| 'end'` | Pin while scrolling horizontally. `true` / `'start'` freeze from the left (identifiers). `'end'` freezes from the right (actions). You can pin several on each side. |
+| `footer`   | `(rows) => unknown` | Footer value from the filtered/sorted rows. |
 
 `T` defaults to `Record<string, unknown>` if you do not pass a row type.
 
@@ -363,7 +417,7 @@ Set CSS variables on `didi-simple-table` (or a parent) to map your app tokens. V
 
 ## Local development
 
-This repo is an Angular workspace. The publishable library lives in `projects/simple-table`. The demo app in `projects/demo` imports it from source so you can try changes without publishing.
+This repo is an Angular workspace. The publishable library lives in `projects/simple-table`. The demo app in `projects/demo` imports it from source so you can try changes without publishing. The hosted playground is the [live demo](https://dinuka991028.github.io/didi-simple-table/).
 
 ```bash
 npm install

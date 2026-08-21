@@ -6,6 +6,7 @@
     "start": "ng serve demo",
     "build": "ng build simple-table",
     "build:demo": "ng build demo",
+    "build:pages": "ng build demo --configuration production --base-href /didi-simple-table/",
     "watch": "ng build simple-table --watch --configuration development",
     "test": "ng test simple-table --no-watch --browsers=ChromeHeadless"
   },

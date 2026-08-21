@@ -1,12 +1,19 @@
 <main class="page">
   <header class="header">
     <p class="eyebrow">didi-simple-table</p>
-    <h1>Playground</h1>
+    <h1>The simple Angular data table</h1>
     <p class="lede">
-      Live examples of every feature. The demo app imports the library from
-      <code>projects/simple-table</code>, so edits there reload this page.
+      A lightweight table for everyday Angular apps. Sort, search, paginate,
+      and select {{ showcaseCount | number }} rows below — then copy the
+      pattern into your project.
     </p>
+    <p class="links">
+      <a href="https://www.npmjs.com/package/didi-simple-table">npm</a>
+      <a href="https://github.com/Dinuka991028/didi-simple-table">GitHub</a>
+    </p>
+    <p class="install"><code>npm install didi-simple-table</code></p>
     <nav class="toc" aria-label="Features">
+      <a href="#showcase">Live table</a>
       <a href="#typed">Columns</a>
       <a href="#striped">Striped rows</a>
       <a href="#cells">Customization</a>
@@ -21,6 +28,81 @@
       <a href="#theme">Theming</a>
     </nav>
   </header>
+
+  <section id="showcase" class="panel showcase">
+    <div class="panel-header">
+      <h2>{{ showcaseCount | number }} rows</h2>
+      <div class="tools">
+        <div class="toolbar" role="group" aria-label="Row state">
+          <button type="button" [class.active]="showcaseView === 'data'" (click)="setShowcaseView('data')">
+            Data
+          </button>
+          <button type="button" [class.active]="showcaseView === 'empty'" (click)="setShowcaseView('empty')">
+            Empty
+          </button>
+          <button type="button" [class.active]="showcaseView === 'loading'" (click)="setShowcaseView('loading')">
+            Loading
+          </button>
+        </div>
+        <div class="toolbar" role="group" aria-label="Theme">
+          <button type="button" [class.active]="showcaseTheme === 'light'" (click)="setShowcaseTheme('light')">
+            Light
+          </button>
+          <button type="button" [class.active]="showcaseTheme === 'dark'" (click)="setShowcaseTheme('dark')">
+            Dark
+          </button>
+        </div>
+      </div>
+    </div>
+    <ul class="feature-list" aria-label="What this table includes">
+      <li>Sorting</li>
+      <li>Search</li>
+      <li>Pagination</li>
+      <li>Row selection</li>
+      <li>Custom cells</li>
+      <li>Sticky header</li>
+      <li>Horizontal scroll</li>
+    </ul>
+    <p class="explain state">
+      Selected:
+      <code>{{ showcaseSelectedLabel ? showcaseSelectedLabel : 'none' }}</code>
+    </p>
+    <didi-simple-table
+      [columns]="showcaseColumns"
+      [data]="showcaseData"
+      [loading]="showcaseLoading"
+      [theme]="showcaseTheme"
+      [sortable]="true"
+      [searchable]="true"
+      [pageSize]="10"
+      [pageSizeOptions]="[10, 25, 50, 100]"
+      [selectable]="'multiple'"
+      [selected]="showcaseSelected"
+      identityKey="id"
+      [stickyHeader]="true"
+      [stickyFirstColumn]="true"
+      [striped]="true"
+      maxHeight="420px"
+      caption="Employees"
+      (selectedChange)="showcaseSelected = $event"
+    >
+      <ng-template didiCell="email" let-row>
+        <a [href]="'mailto:' + row.email">{{ row.email }}</a>
+      </ng-template>
+      <ng-template didiCell="status" let-row>
+        <span
+          class="pill"
+          [class.is-ok]="row.status === 'Active'"
+          [class.is-warn]="row.status === 'Leave'"
+          [class.is-muted]="row.status === 'Contract'"
+        >
+          {{ row.status }}
+        </span>
+      </ng-template>
+      <ng-template didiEmpty>No employees to show.</ng-template>
+      <ng-template didiLoading>Loading employees…</ng-template>
+    </didi-simple-table>
+  </section>
 
   <section id="typed" class="panel">
     <h2>Typed columns</h2>

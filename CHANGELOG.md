@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- README and npm listing now position the library as a lightweight Angular data table, with discovery keywords and a 1,200-row GitHub Pages demo.
+
 ## 0.2.0
 
 - Peer dependencies: Angular 14 through 22 (`>=14.0.0 <23.0.0`).
