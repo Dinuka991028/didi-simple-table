@@ -1,5 +1,5 @@
 .page {
-  max-width: 920px;
+  max-width: 1080px;
   margin: 0 auto;
   padding: 48px 24px 80px;
 }
@@ -26,8 +26,31 @@ h1 {
 
 .lede {
   margin: 0;
-  max-width: 56ch;
+  max-width: 62ch;
   color: #475569;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 16px 0 0;
+}
+
+.links a {
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+.install {
+  margin: 12px 0 0;
+}
+
+.install code {
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #e2e8f0;
+  font-size: 0.95em;
 }
 
 .lede code,
@@ -82,6 +105,25 @@ h2 {
 
 .panel-header h2 {
   margin: 0;
+}
+
+.feature-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.feature-list li {
+  padding: 4px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .explain {
@@ -184,6 +226,11 @@ h2 {
 .pill.is-warn {
   background: #ffedd5;
   color: #9a3412;
+}
+
+.pill.is-muted {
+  background: #e2e8f0;
+  color: #334155;
 }
 
 .action-btn {

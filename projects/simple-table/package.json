@@ -1,19 +1,34 @@
 {
   "name": "didi-simple-table",
   "version": "0.2.0",
-  "description": "A simple, typed table component for Angular.",
+  "description": "A lightweight, developer-friendly data table for Angular with sorting, searching, pagination, selection and custom cell templates.",
   "license": "MIT",
   "keywords": [
     "angular",
+    "angular table",
+    "angular data table",
+    "angular datatable",
+    "angular component",
+    "typescript",
+    "typescript table",
     "table",
+    "table component",
     "datatable",
-    "grid"
+    "data table",
+    "data grid",
+    "grid",
+    "sortable",
+    "sortable table",
+    "searchable",
+    "searchable table",
+    "pagination",
+    "standalone"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Dinuka991028/didi-simple-table.git"
   },
-  "homepage": "https://github.com/Dinuka991028/didi-simple-table#readme",
+  "homepage": "https://dinuka991028.github.io/didi-simple-table/",
   "bugs": {
     "url": "https://github.com/Dinuka991028/didi-simple-table/issues"
   },

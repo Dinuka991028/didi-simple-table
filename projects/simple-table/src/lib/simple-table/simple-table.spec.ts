@@ -813,6 +813,49 @@ describe('SimpleTableComponent theme', () => {
     <didi-simple-table
       [columns]="columns"
       [data]="data"
+      [themePicker]="true"
+      [theme]="theme"
+      (themeChange)="theme = $event"
+    ></didi-simple-table>
+  `
+})
+class ThemePickerHostComponent {
+  theme = 'inherit';
+  columns: TableColumn<User>[] = [{ key: 'name', label: 'Name' }];
+  data: User[] = [{ name: 'Ada', email: 'ada@example.com' }];
+}
+
+describe('SimpleTableComponent theme picker', () => {
+  it('hides the picker until the developer enables it, then emits themeChange', async () => {
+    await TestBed.configureTestingModule({
+      imports: [SimpleTableModule],
+      declarations: [ThemeHostComponent, ThemePickerHostComponent]
+    }).compileComponents();
+
+    const hidden = TestBed.createComponent(ThemeHostComponent);
+    hidden.detectChanges();
+    expect(hidden.nativeElement.querySelector('.didi-theme-picker')).toBeNull();
+
+    const fixture = TestBed.createComponent(ThemePickerHostComponent);
+    fixture.detectChanges();
+
+    const select = fixture.nativeElement.querySelector('.didi-theme-picker select') as HTMLSelectElement;
+    expect(select).toBeTruthy();
+    select.value = 'dark';
+    select.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+
+    const table = fixture.nativeElement.querySelector('didi-simple-table') as HTMLElement;
+    expect(fixture.componentInstance.theme).toBe('dark');
+    expect(table.classList.contains('didi-theme-dark')).toBe(true);
+  });
+});
+
+@Component({
+  template: `
+    <didi-simple-table
+      [columns]="columns"
+      [data]="data"
       [columnCollapse]="true"
       (hiddenColumnsChange)="hidden = $event"
     ></didi-simple-table>

@@ -1,6 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PaginationMode, PagerNav, ResponsiveMode, TableColumn, TableQuery, TableSortState, TableTheme } from 'didi-simple-table';
 
+import { SHOWCASE_COUNT, SHOWCASE_EMPTY, SHOWCASE_ROWS, ShowcaseRow } from './showcase-data';
+
 interface User {
   name: string;
   email: string;
@@ -99,6 +101,25 @@ type StatusView = 'data' | 'empty' | 'loading';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, OnDestroy {
+  readonly showcaseCount = SHOWCASE_COUNT;
+  showcaseView: StatusView = 'data';
+  showcaseTheme: TableTheme = 'light';
+  showcaseSelected: ShowcaseRow[] = [];
+  showcaseColumns: TableColumn<ShowcaseRow>[] = [
+    { key: 'name', label: 'Name', minWidth: '10rem' },
+    { key: 'email', label: 'Email', minWidth: '16rem' },
+    { key: 'role', label: 'Role' },
+    { key: 'team', label: 'Team' },
+    { key: 'city', label: 'City' },
+    {
+      key: 'salary',
+      label: 'Salary',
+      align: 'end',
+      format: (value) => '$' + Number(value).toLocaleString()
+    },
+    { key: 'status', label: 'Status' }
+  ];
+
   basicColumns: TableColumn<User>[] = [
     { key: 'name', label: 'Name' },
     { key: 'email', label: 'Email' },
@@ -201,6 +222,18 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private loadHandle: ReturnType<typeof setTimeout> | null = null;
 
+  get showcaseData(): ShowcaseRow[] {
+    return this.showcaseView === 'empty' ? SHOWCASE_EMPTY : SHOWCASE_ROWS;
+  }
+
+  get showcaseLoading(): boolean {
+    return this.showcaseView === 'loading';
+  }
+
+  get showcaseSelectedLabel(): string {
+    return this.showcaseSelected.map((row) => row.name).join(', ');
+  }
+
   get statusData(): User[] {
     return this.statusView === 'empty' ? [] : SAMPLE;
   }
@@ -235,6 +268,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
   setStatus(view: StatusView): void {
     this.statusView = view;
+  }
+
+  setShowcaseView(view: StatusView): void {
+    this.showcaseView = view;
+  }
+
+  setShowcaseTheme(theme: TableTheme): void {
+    this.showcaseTheme = theme;
   }
 
   get sortLabel(): string {

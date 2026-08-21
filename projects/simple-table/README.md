@@ -1,12 +1,22 @@
 # didi-simple-table
 
-A small, typed table component for Angular 14+.
+The lightweight Angular table for everyday applications.
 
-Pass in columns and row data. The table renders headers, cells, empty and loading states, custom cell templates, optional column sorting, search, pagination, row click, selection, and a sticky header. A horizontal scroll container appears when the content is wider than its parent.
+[**Live Demo →**](https://dinuka991028.github.io/didi-simple-table/)
 
-![didi-simple-table preview](../../docs/preview.png)
+You do not need AG Grid, PrimeNG, or Angular Material for a normal CRUD/admin table. Pass in columns and row data. The table handles the rest.
 
-## Install
+- Sorting
+- Search
+- Pagination
+- Row selection
+- Row click
+- Loading state
+- Empty state
+- Custom cell templates
+- Sticky header
+- Horizontal scrolling
+- TypeScript-friendly
 
 ```bash
 npm install didi-simple-table
@@ -14,11 +24,63 @@ npm install didi-simple-table
 
 Peer dependencies: `@angular/core` and `@angular/common` `>=14.0.0 <23.0.0` (Angular 14 through 22).
 
-Supported Angular versions: **14, 15, 16, 17, 18, 19, 20, 21, 22**.
+## Quick start
 
-## Usage
+Lead with standalone. Import the table, give it a row type, then bind `columns` and `data`. `key` is checked against the row type, so typos fail at compile time.
 
-Import `SIMPLE_TABLE_IMPORTS` on the standalone component that uses the table. That array includes the table and the `didiCell` / `didiHeader` / `didiEmpty` / `didiLoading` template directives. Define a row type, then bind `columns` and `data`. `key` is checked against the row type, so typos fail at compile time. Nested fields use dotted paths such as `address.city`.
+```ts
+import { Component } from '@angular/core';
+import { SimpleTableComponent, TableColumn } from 'didi-simple-table';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  status: string;
+}
+
+@Component({
+  selector: 'app-users',
+  standalone: true,
+  imports: [SimpleTableComponent],
+  template: `
+    <didi-simple-table
+      [columns]="columns"
+      [data]="users"
+      [sortable]="true"
+      [searchable]="true"
+      [pageSize]="10"
+    ></didi-simple-table>
+  `
+})
+export class UsersComponent {
+  columns: TableColumn<User>[] = [
+    { key: 'name', label: 'Name', sortable: true },
+    { key: 'email', label: 'Email' },
+    { key: 'status', label: 'Status' }
+  ];
+
+  users: User[] = [
+    { id: 1, name: 'Ada Lovelace', email: 'ada@example.com', status: 'Active' },
+    { id: 2, name: 'Alan Turing', email: 'alan@example.com', status: 'Active' },
+    { id: 3, name: 'Grace Hopper', email: 'grace@example.com', status: 'Leave' }
+  ];
+}
+```
+
+That is the whole setup. Nested fields use dotted paths such as `address.city`.
+
+![didi-simple-table preview](https://raw.githubusercontent.com/Dinuka991028/didi-simple-table/main/docs/preview.png)
+
+## Why this table
+
+**didi-simple-table** is the simple Angular data table — not the most powerful Angular data grid.
+
+AG Grid and ngx-datatable win when you need a spreadsheet: virtualization, pinning, resizing, and enterprise features. This library is for the table you ship in an admin app: typed columns, sort, search, pagination, and templates, with no extra UI kit.
+
+## Custom cells
+
+For buttons, links, or badges, import `SIMPLE_TABLE_IMPORTS` so the `didiCell` / `didiHeader` / `didiEmpty` / `didiLoading` directives are available.
 
 ```ts
 import { Component } from '@angular/core';
@@ -86,6 +148,8 @@ import { UsersComponent } from './users.component';
 })
 export class UsersModule {}
 ```
+
+## Features
 
 Columns without a `didiCell` template still print the field value. Use `format` on a column for a simple formatter, `didiHeader` for a custom header, and `didiCell` for buttons, icons, or conditional styles. If `loading` is true, the loading state replaces the rows. If `loading` is false and `data` is empty, the empty state is shown instead. With `[sortable]="true"`, click a header to cycle ascending, descending, and the original order. Strings, numbers, and dates sort automatically; set `sortType` or `compare` when you need control. `[multiSort]="true"` sorts by more than one column. Server paging leaves `data` as-is and emits `(sortChange)` so the parent can reload.
 
@@ -163,8 +227,9 @@ didi-simple-table {
 | ---------------- | ------------------ | -------------- | ------------------------------------------------ |
 | `columns`        | `TableColumn<T>[]` | `[]`           | Header labels and which field each column reads. |
 | `data`           | `T[]`              | `[]`           | Rows to render. Full list for client paging, or one page for server paging. |
-| `loading`        | `boolean`          | `false`        | When true, shows the loading state instead of rows. |
-| `emptyMessage`   | `string`           | `'No data'`    | Empty text when there is no custom `didiEmpty` content. |
+| `loading`        | `boolean`          | `false`        | When true, shows an overlay if rows are already visible, or a loading row when the table is empty. |
+| `emptyMessage`   | `string`           | `'No data'`    | Empty text when there is no search/filter and no custom `didiEmpty` content. Override via `labels` too. |
+| `noResultsMessage` | `string`         | `'No matching rows'` | Empty text when search or column filters match nothing. |
 | `loadingMessage` | `string`           | `'Loading...'` | Loading text when there is no custom `didiLoading` content. |
 | `sortable`       | `boolean`          | `false`        | When true, clickable headers sort by that column. |
 | `sort`           | `TableSort<T> \| TableSort<T>[] \| null` | `null` | Current sort. A single spec, or an array when `multiSort` is on. Use with `(sortChange)` or `[(sort)]`. |
@@ -179,20 +244,41 @@ didi-simple-table {
 | `search`         | `string`           | `''`           | Current search text. Use with `(searchChange)` or `[(search)]`. |
 | `searchPlaceholder` | `string`        | `'Search'`     | Placeholder for the search box. |
 | `searchKeys`     | `Array<TableField<T>> \| null` | `null` | Fields to match. Defaults to every column `key`. |
+| `searchDebounce` | `number`           | `300`          | Delay in ms before search emits. `0` is immediate. Enter and clear apply immediately. |
+| `labels`         | `Partial<TableLabels>` | `{}`        | Override pager, search, columns, and aria strings. Use `{count}`, `{label}`, `{page}`, `{total}`, `{start}`, `{end}` placeholders. |
+| `filters`        | `TableFilters<T>`  | `{}`           | Per-column filter values. Use with `(filtersChange)` and `column.filter`. |
 | `resetPageOnSort` | `boolean`         | `true`         | When true, sorting moves back to page 1. |
 | `resetPageOnSearch` | `boolean`       | `true`         | When true, searching moves back to page 1. |
 | `selectable`     | `false \| 'single' \| 'multiple'` | `false` | Row selection. `true` is the same as `'single'`. |
 | `selected`       | `T[]`              | `[]`           | Currently selected rows. Use with `(selectedChange)` or `[(selected)]`. |
-| `identityKey`    | `keyof T & string` | —              | Field used to compare rows after they are recreated (for example from an API). |
+| `identityKey`    | `TableField<T>`    | —              | Field used to compare rows after they are recreated, including nested paths. |
+| `selectOnRowClick` | `boolean`        | `true`         | When false, clicking a row emits `(rowClick)` but does not toggle selection. Use checkboxes to select. |
+| `selectAllMode`  | `'page' \| 'filtered'` | `'page'` | Header checkbox selects the current page, or every matching row. |
 | `stickyHeader`   | `boolean`          | `false`        | When true, header cells stay visible while the table body scrolls. |
 | `maxHeight`      | `string \| null`   | `null`         | Max height of the scroll area, for example `'240px'`. Use with `stickyHeader`. |
 | `caption`        | `string`           | `''`           | Accessible table name (visually hidden). |
 | `theme`          | `'inherit' \| 'light' \| 'dark' \| 'teal' \| 'warm' \| 'compact'` | `'inherit'` | `inherit` uses the host font and `currentColor`. Packaged looks: `light`, `dark`, `teal`, `warm`, `compact`. Unknown values fall back to `inherit`. |
+| `themePicker`    | `boolean`          | `false`        | When true, shows a theme select in the table toolbar. Off by default so only apps that want end-user theming show it. |
+| `themeOptions`   | `TableTheme[] \| null` | `null`      | Subset of themes in the picker. Defaults to every packaged theme. |
+| `themeOptionLabels` | `Partial<Record<TableTheme, string>>` | `{}` | Custom names for picker options (for i18n). |
 | `columnCollapse` | `boolean`          | `false`        | When true, users can hide and restore columns from a Columns menu and header controls. |
 | `hiddenColumns`  | `Array<TableField<T>> \| null` | `null` | Keys of collapsed columns. Use with `(hiddenColumnsChange)` or `[(hiddenColumns)]`. |
 | `responsive`     | `'scroll' \| 'stack'` | `'scroll'` | `scroll` keeps the grid and overflows horizontally. `stack` becomes labeled cards when the table is narrower than `breakpoint`. |
 | `breakpoint`     | `string`           | `'640px'`      | Width at which `stack` and `hideOnMobile` apply. Measured on the table, not the viewport. |
 | `stickyFirstColumn` | `boolean`       | `false`        | When true, the first visible column stays pinned while the table scrolls horizontally. To pin other columns, set `pinned` on them. |
+| `striped`        | `boolean`          | `false`        | Alternate near-white row backgrounds so rows are easier to scan. Hover is a slightly stronger tint. |
+| `density`        | `'comfortable' \| 'compact' \| null` | `null` | Compact padding without changing the color theme. |
+| `nullPlaceholder`| `string`           | `''`           | Shown when a cell value is null or empty. |
+| `locale`         | `string`           | —              | Used by `formatType` (`number`, `date`, `currency`). |
+| `rowClass`       | `(row) => string \| string[] \| Record<string, boolean>` | — | Extra classes on each data row. |
+| `cellClass`      | `(value, row, column) => ...` | — | Extra classes on each cell. |
+| `expandable`     | `boolean`          | `false`        | Row expand control. Pair with `ng-template didiDetail`. |
+| `groupBy`        | `TableField<T> \| null` | `null`    | Group client rows by a field. |
+| `exportable`     | `boolean`          | `false`        | Shows an Export CSV button. |
+| `columnResize`   | `boolean`          | `false`        | Drag header edges to resize. |
+| `columnReorder`  | `boolean`          | `false`        | Drag headers to reorder. |
+| `virtualScroll`  | `boolean`          | `false`        | Window rows inside `maxHeight`. |
+| `persistKey`     | `string \| null`   | `null`         | Saves hidden columns, order, and widths to `localStorage`. |
 
 ### Outputs
 
@@ -202,10 +288,15 @@ didi-simple-table {
 | `pageChange`  | `number`                        | Emits when the page changes.                     |
 | `pageSizeChange` | `number`                     | Emits when the rows-per-page value changes.      |
 | `searchChange` | `string`                        | Emits when the search box value changes.         |
-| `queryChange` | `TableQuery<T>`                 | Emits `{ page, pageSize, sort, search }` after page, size, sort, or search changes. Use this for API reloads. |
+| `queryChange` | `TableQuery<T>`                 | Emits `{ page, pageSize, sort, search, filters }` after page, size, sort, search, or filter changes. |
 | `rowClick`    | `T`                             | Emits the row when the row is clicked.           |
 | `selectedChange` | `T[]`                        | Emits the selected rows.                         |
 | `hiddenColumnsChange` | `Array<TableField<T>>` | Emits the keys of collapsed columns.        |
+| `filtersChange` | `TableFilters<T>`             | Emits per-column filter values.                  |
+| `cellEdit`    | `TableCellEdit<T>`              | Emits after an editable cell is committed.       |
+| `expandedChange` | `T[]`                        | Emits expanded rows.                             |
+| `columnOrderChange` | `Array<TableField<T>>`   | Emits after a header drag-reorder.               |
+| `themeChange`    | `TableTheme`                    | Emits when the toolbar theme picker changes. Use with `[(theme)]`. |
 
 ### Templates
 
@@ -215,21 +306,30 @@ didi-simple-table {
 | `ng-template didiHeader="key"` | `let-column` | Custom header for the column whose `key` matches. Also used as the label on stacked cards. |
 | `ng-template didiEmpty`  | none                            | Custom empty content. Omit it, or leave it empty, to use `emptyMessage`. |
 | `ng-template didiLoading`| none                            | Custom loading content. Omit it, or leave it empty, to use `loadingMessage`. |
+| `ng-template didiDetail` | `let-row`                       | Expanded row body when `expandable` is on. |
+| `ng-template didiFooter="key"` | `let-column` (also `rows`, `value`) | Footer cell for a column. |
 
 ### `TableColumn<T>`
 
-| Field   | Type               | Description                                  |
-| ------- | ------------------ | -------------------------------------------- |
-| `key`      | `TableField<T>` | Field on the row, or a nested path such as `address.city`. Use a dedicated key for template-only columns (for example `actions`). |
+| Field   | Type                | Description                                      |
+| ------- | ------------------- | ------------------------------------------------ |
+| `key`      | `TableField<T>` | Field on the row, a nested path such as `address.city`, or a virtual key such as `_actions`. |
 | `label`    | `string`           | Header text.                                 |
 | `sortable` | `boolean`          | Set to `false` to disable sorting for this column when the table is sortable. |
+| `width` / `minWidth` | `string` | Column size, for example `'12rem'`. |
+| `align`    | `'start' \| 'center' \| 'end'` | Cell alignment. Use `end` for numbers. |
+| `pinned`   | `boolean \| 'start' \| 'end'` | Pin while scrolling horizontally. `true` / `'start'` freeze from the left (identifiers). `'end'` freezes from the right (actions). You can pin several on each side. |
+| `editable` | `boolean`          | Double-click to edit. Emits `(cellEdit)`. |
+| `filter`   | `boolean \| 'text' \| 'select' \| 'number' \| 'date'` | Show a filter control under the header. |
+| `filterOptions` | `{ label, value }[]` | Options when `filter` is `'select'`. |
 | `format`   | `(value, row) => unknown` | Optional formatter used when there is no `didiCell` template. |
+| `formatType` | `'number' \| 'date' \| 'currency'` | Built-in `Intl` formatting when `format` is omitted. |
 | `sortType` | `'auto' \| 'string' \| 'number' \| 'date'` | How to compare this column. Default `auto` detects numbers, dates, and strings. |
 | `compare`  | `(left, right, leftRow, rightRow) => number` | Custom comparator. Return negative if `left` comes first. |
 | `hidden`   | `boolean`          | Set to `true` to start the column collapsed. |
 | `collapsible` | `boolean`       | Set to `false` to keep the column always visible when `columnCollapse` is on. |
 | `hideOnMobile` | `boolean`      | Set to `true` to hide the column when the table is narrower than `breakpoint`. |
-| `pinned`   | `boolean \| 'start' \| 'end'` | Pin while scrolling horizontally. `true` / `'start'` freeze from the left (identifiers). `'end'` freezes from the right (actions). You can pin several on each side. |
+| `footer`   | `(rows) => unknown` | Footer value from the filtered/sorted rows. |
 
 `T` defaults to `Record<string, unknown>` if you do not pass a row type.
 
@@ -250,6 +350,7 @@ didi-simple-table {
 | `pageSize` | `number \| null`   | Rows per page, or `null` when paging is off.     |
 | `sort`     | `TableSortState<T>` | Current sort, or `null` when unsorted.          |
 | `search`   | `string`           | Current search text.                             |
+| `filters`  | `TableFilters<T>`  | Per-column filter values.                        |
 
 Listen to `(queryChange)` when the parent loads rows from an API so page, size, sort, and search stay in one handler.
 
@@ -316,18 +417,17 @@ Set CSS variables on `didi-simple-table` (or a parent) to map your app tokens. V
 
 ## Local development
 
-From the workspace root, start the demo app. It imports this library from source.
+This repo is an Angular workspace. The publishable library lives in `projects/simple-table`. The demo app in `projects/demo` imports it from source so you can try changes without publishing. The hosted playground is the [live demo](https://dinuka991028.github.io/didi-simple-table/).
 
 ```bash
+npm install
 npm start
 ```
 
 Open `http://localhost:4200/`.
 
-## Build
-
 ```bash
 npm run build
 ```
 
-Publish from `dist/simple-table`.
+The library build output is written to `dist/simple-table`.

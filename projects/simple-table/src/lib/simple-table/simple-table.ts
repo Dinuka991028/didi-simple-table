@@ -178,6 +178,9 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
   @Input() maxHeight: string | null = null;
   @Input() caption = '';
   @Input() theme: TableTheme | string = 'inherit';
+  @Input() themePicker = false;
+  @Input() themeOptions: TableTheme[] | null = null;
+  @Input() themeOptionLabels: Partial<Record<TableTheme, string>> = {};
   @Input() columnCollapse = false;
   @Input() hiddenColumns: Array<TableField<T>> | null = null;
   @Input() responsive: ResponsiveMode = 'scroll';
@@ -218,6 +221,7 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
   @Output() cellEdit = new EventEmitter<TableCellEdit<T>>();
   @Output() expandedChange = new EventEmitter<T[]>();
   @Output() columnOrderChange = new EventEmitter<Array<TableField<T>>>();
+  @Output() themeChange = new EventEmitter<TableTheme>();
 
   @ContentChildren(DidiCellDirective) private cellDefs?: QueryList<DidiCellDirective>;
   @ContentChildren(DidiHeaderDirective) private headerDefs?: QueryList<DidiHeaderDirective>;
@@ -273,8 +277,32 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
       : 'inherit';
   }
 
+  get resolvedThemeOptions(): TableTheme[] {
+    const options = this.themeOptions?.length ? this.themeOptions : [...TABLE_THEMES];
+    return options.filter((option) => (TABLE_THEMES as readonly string[]).includes(option));
+  }
+
   get resolvedLabels(): TableLabels {
     return { ...DEFAULT_TABLE_LABELS, ...this.labels };
+  }
+
+  themeOptionLabel(option: TableTheme): string {
+    const override = this.themeOptionLabels[option];
+    if (override) {
+      return override;
+    }
+
+    return option.charAt(0).toUpperCase() + option.slice(1);
+  }
+
+  onThemeSelect(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    const next = (TABLE_THEMES as readonly string[]).includes(value)
+      ? (value as TableTheme)
+      : 'inherit';
+    this.theme = next;
+    this.themeChange.emit(next);
+    this.cdr.markForCheck();
   }
 
   get isEmpty(): boolean {

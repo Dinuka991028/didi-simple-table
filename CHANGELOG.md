@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- README and npm listing now position the library as a lightweight Angular data table, with discovery keywords and a 1,200-row GitHub Pages demo.
+
 ## 0.2.0
 
 - Peer dependencies: Angular 14 through 22 (`>=14.0.0 <23.0.0`).
@@ -13,6 +17,7 @@
 - Column menu **Show all** restores every hidden column in one click.
 - Pager First / Last jumps to the start or end of the pages.
 - `[pagerNav]="'icon'"` switches pager buttons from words to « ‹ › ».
+- Optional toolbar **theme picker** (`themePicker`), off unless the app developer enables it.
 - MIT license. Unit tests run with Karma/Jasmine.
 
 ## 0.1.6
