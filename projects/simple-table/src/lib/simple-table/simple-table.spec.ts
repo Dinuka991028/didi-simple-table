@@ -229,9 +229,10 @@ function rowNames(fixture: ComponentFixture<unknown>): string[] {
 }
 
 @Component({
-  template: `<didi-simple-table [columns]="columns" [data]="data" [pageSize]="2"></didi-simple-table>`
+  template: `<didi-simple-table [columns]="columns" [data]="data" [pageSize]="2" [pagerNav]="pagerNav"></didi-simple-table>`
 })
 class PageHostComponent {
+  pagerNav: 'label' | 'icon' = 'label';
   columns: TableColumn<User>[] = [
     { key: 'name', label: 'Name' },
     { key: 'email', label: 'Email' }
@@ -260,12 +261,47 @@ describe('SimpleTableComponent pagination', () => {
     expect(rowNames(fixture)).toEqual(['Ada', 'Grace']);
     expect(fixture.nativeElement.textContent).toContain('1–2 of 3');
 
-    const next = (fixture.nativeElement.querySelectorAll('.didi-pager-actions button') as NodeListOf<HTMLButtonElement>)[1];
+    const next = fixture.nativeElement.querySelector('.didi-pager-next') as HTMLButtonElement;
     next.click();
     fixture.detectChanges();
 
     expect(rowNames(fixture)).toEqual(['Alan']);
     expect(fixture.nativeElement.textContent).toContain('3–3 of 3');
+  });
+
+  it('jumps to the last page and back to the first', () => {
+    const last = fixture.nativeElement.querySelector('.didi-pager-last') as HTMLButtonElement;
+    const first = fixture.nativeElement.querySelector('.didi-pager-first') as HTMLButtonElement;
+
+    expect(first.disabled).toBe(true);
+    expect(last.disabled).toBe(false);
+
+    last.click();
+    fixture.detectChanges();
+
+    expect(rowNames(fixture)).toEqual(['Alan']);
+    expect(first.disabled).toBe(false);
+    expect(last.disabled).toBe(true);
+
+    first.click();
+    fixture.detectChanges();
+
+    expect(rowNames(fixture)).toEqual(['Ada', 'Grace']);
+    expect(first.disabled).toBe(true);
+  });
+
+  it('can switch pager buttons from labels to icons', () => {
+    const host = fixture.componentInstance;
+    expect(fixture.nativeElement.querySelector('.didi-pager-next')?.textContent?.trim()).toBe('Next');
+
+    host.pagerNav = 'icon';
+    fixture.detectChanges();
+
+    const table = fixture.nativeElement.querySelector('didi-simple-table') as HTMLElement;
+    const next = fixture.nativeElement.querySelector('.didi-pager-next') as HTMLButtonElement;
+    expect(table.classList.contains('didi-pager-icons')).toBe(true);
+    expect(next.textContent?.trim()).toBe('›');
+    expect(next.getAttribute('aria-label')).toBe('Next');
   });
 });
 
@@ -323,7 +359,7 @@ describe('SimpleTableComponent server pagination', () => {
     expect(rowNames(fixture)).toEqual(['Ada', 'Grace']);
     expect(fixture.nativeElement.textContent).toContain('1–2 of 3');
 
-    const next = (fixture.nativeElement.querySelectorAll('.didi-pager-actions button') as NodeListOf<HTMLButtonElement>)[1];
+    const next = fixture.nativeElement.querySelector('.didi-pager-next') as HTMLButtonElement;
     next.click();
     fixture.detectChanges();
 
@@ -399,7 +435,7 @@ describe('SimpleTableComponent search', () => {
   });
 
   it('resets to page 1 on search by default', () => {
-    const next = (fixture.nativeElement.querySelectorAll('.didi-pager-actions button') as NodeListOf<HTMLButtonElement>)[1];
+    const next = fixture.nativeElement.querySelector('.didi-pager-next') as HTMLButtonElement;
     next.click();
     fixture.detectChanges();
     expect(rowNames(fixture)).toEqual(['Alan']);
@@ -470,7 +506,7 @@ describe('SimpleTableComponent page size and page state', () => {
     fixture.componentInstance.resetPageOnSort = false;
     fixture.detectChanges();
 
-    const next = (fixture.nativeElement.querySelectorAll('.didi-pager-actions button') as NodeListOf<HTMLButtonElement>)[1];
+    const next = fixture.nativeElement.querySelector('.didi-pager-next') as HTMLButtonElement;
     next.click();
     fixture.detectChanges();
     expect(rowNames(fixture)).toEqual(['Alan']);
@@ -817,6 +853,28 @@ describe('SimpleTableComponent column collapse', () => {
 
     expect(root.textContent).toContain('ada@example.com');
     expect(fixture.componentInstance.hidden).toEqual([]);
+  });
+
+  it('restores every hidden column with Show all', async () => {
+    await TestBed.configureTestingModule({
+      imports: [SimpleTableModule],
+      declarations: [CollapseHostComponent]
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(CollapseHostComponent);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    expect(root.textContent).not.toContain('ada@example.com');
+
+    const reset = root.querySelector('.didi-column-reset') as HTMLButtonElement;
+    expect(reset).toBeTruthy();
+    reset.click();
+    fixture.detectChanges();
+
+    expect(root.textContent).toContain('ada@example.com');
+    expect(fixture.componentInstance.hidden).toEqual([]);
+    expect(root.querySelector('.didi-column-reset')).toBeNull();
   });
 });
 

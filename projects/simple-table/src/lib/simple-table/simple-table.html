@@ -34,6 +34,14 @@
         >
           {{ columnMenuLabel }}
         </button>
+        <button
+          *ngIf="canShowAllColumns"
+          type="button"
+          class="didi-column-reset"
+          (click)="showAllColumns(); $event.stopPropagation()"
+        >
+          {{ resolvedLabels.showAllColumns }}
+        </button>
         <div
           *ngIf="columnMenuOpen"
           class="didi-column-menu-panel"
@@ -380,12 +388,21 @@
     <div class="didi-pager-actions">
       <button
         type="button"
+        class="didi-pager-first"
+        [disabled]="currentPage <= 1"
+        [attr.aria-label]="resolvedLabels.firstPage"
+        (click)="goToPage(1)"
+      >
+        {{ pagerButtonText('first') }}
+      </button>
+      <button
+        type="button"
         class="didi-pager-prev"
         [disabled]="currentPage <= 1"
         [attr.aria-label]="resolvedLabels.previous"
         (click)="goToPage(currentPage - 1)"
       >
-        {{ resolvedLabels.previous }}
+        {{ pagerButtonText('prev') }}
       </button>
       <span class="didi-pager-page">{{ pageLabel }}</span>
       <button
@@ -395,7 +412,16 @@
         [attr.aria-label]="resolvedLabels.next"
         (click)="goToPage(currentPage + 1)"
       >
-        {{ resolvedLabels.next }}
+        {{ pagerButtonText('next') }}
+      </button>
+      <button
+        type="button"
+        class="didi-pager-last"
+        [disabled]="currentPage >= totalPages"
+        [attr.aria-label]="resolvedLabels.lastPage"
+        (click)="goToPage(totalPages)"
+      >
+        {{ pagerButtonText('last') }}
       </button>
     </div>
   </nav>

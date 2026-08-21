@@ -89,7 +89,7 @@ export class UsersModule {}
 
 Columns without a `didiCell` template still print the field value. Use `format` on a column for a simple formatter, `didiHeader` for a custom header, and `didiCell` for buttons, icons, or conditional styles. If `loading` is true, the loading state replaces the rows. If `loading` is false and `data` is empty, the empty state is shown instead. With `[sortable]="true"`, click a header to cycle ascending, descending, and the original order. Strings, numbers, and dates sort automatically; set `sortType` or `compare` when you need control. `[multiSort]="true"` sorts by more than one column. Server paging leaves `data` as-is and emits `(sortChange)` so the parent can reload.
 
-Set `[pageSize]` to paginate. Switch with `[pagination]="'client'"` or `[pagination]="'server'"`. `[pageSizeOptions]` adds a rows-per-page selector. `[searchable]` adds a search box; client mode filters locally, server mode emits the term so you can query the API.
+Set `[pageSize]` to paginate. The pager includes First, Previous, Next, and Last. Set `[pagerNav]="'icon'"` for « ‹ › » instead of words. Switch with `[pagination]="'client'"` or `[pagination]="'server'"`. `[pageSizeOptions]` adds a rows-per-page selector. `[searchable]` adds a search box; client mode filters locally, server mode emits the term so you can query the API.
 
 - **Client:** pass the full list. The table searches, sorts, and slices it.
 - **Server:** pass one page, `[total]` from the API, and reload `data` on `(queryChange)` (or the individual page, sort, search, and page-size events).
@@ -99,7 +99,7 @@ Set `[pageSize]` to paginate. Switch with `[pagination]="'client'"` or `[paginat
 
 `[stickyHeader]="true"` with `maxHeight` keeps headers visible while rows scroll. Sticky headers and pinned columns use an opaque background so rows do not show through. `caption` names the table for assistive tech.
 
-`[columnCollapse]="true"` lets users hide extra columns. Set `hidden: true` on a column to start it collapsed, or `collapsible: false` to keep it always visible.
+`[columnCollapse]="true"` lets users hide extra columns. After hiding some, **Show all** restores the full set in one click. Set `hidden: true` on a column to start it collapsed, or `collapsible: false` to keep it always visible.
 
 On small screens, `responsive="stack"` turns each row into a labeled card when the table is narrower than `breakpoint`. Card labels use the same `didiHeader` template as the column title (so translations apply), or `column.label` if there is no template. `maxHeight` / sticky header are ignored while stacked so the pager stays under the cards. `responsive="scroll"` keeps the grid and scrolls sideways; `[stickyFirstColumn]="true"` pins the first column. Set `pinned: true` (or `'start'`) on identifier columns and `pinned: 'end'` on action columns so the middle can scroll. Set `hideOnMobile: true` on a column to drop it automatically in the narrow view.
 
@@ -174,6 +174,7 @@ didi-simple-table {
 | `pageSizeOptions` | `number[] \| null` | `null`        | Sizes shown in the pager select. Omit to hide the control. |
 | `page`           | `number`           | `1`            | Current page (1-based). Use with `(pageChange)` or `[(page)]`. |
 | `pagination`     | `'client' \| 'server'` | `'client'` | `client` searches, sorts, and slices `data`. `server` leaves `data` as-is. |
+| `pagerNav`       | `'label' \| 'icon'` | `'label'`   | Pager buttons as words (First, Previous, Next, Last) or icons (« ‹ › »). Aria labels stay as words. |
 | `total`          | `number \| null`   | `null`         | Total row count. Required for the pager in `server` mode. |
 | `searchable`     | `boolean`          | `false`        | When true, shows a search box above the table. |
 | `search`         | `string`           | `''`           | Current search text. Use with `(searchChange)` or `[(search)]`. |
@@ -198,7 +199,7 @@ didi-simple-table {
 | `responsive`     | `'scroll' \| 'stack'` | `'scroll'` | `scroll` keeps the grid and overflows horizontally. `stack` becomes labeled cards when the table is narrower than `breakpoint`. |
 | `breakpoint`     | `string`           | `'640px'`      | Width at which `stack` and `hideOnMobile` apply. Measured on the table, not the viewport. |
 | `stickyFirstColumn` | `boolean`       | `false`        | When true, the first visible column stays pinned while the table scrolls horizontally. To pin other columns, set `pinned` on them. |
-| `striped`        | `boolean`          | `false`        | Alternate row backgrounds. |
+| `striped`        | `boolean`          | `false`        | Alternate near-white row backgrounds so rows are easier to scan. Hover is a slightly stronger tint. |
 | `density`        | `'comfortable' \| 'compact' \| null` | `null` | Compact padding without changing the color theme. |
 | `nullPlaceholder`| `string`           | `''`           | Shown when a cell value is null or empty. |
 | `locale`         | `string`           | —              | Used by `formatType` (`number`, `date`, `currency`). |

@@ -42,6 +42,7 @@ import {
   DidiFooterContext,
   DidiHeaderContext,
   PaginationMode,
+  PagerNav,
   ResponsiveMode,
   SelectAllMode,
   SelectionMode,
@@ -80,6 +81,7 @@ export {
   Density,
   NestedKeyOf,
   PaginationMode,
+  PagerNav,
   ResponsiveMode,
   SelectAllMode,
   SelectionMode,
@@ -137,6 +139,7 @@ export type TableViewItem<T> = TableViewGroup<T> | TableViewRow<T>;
     '[class.didi-has-pins]': 'hasPinnedColumns && !isStacked',
     '[class.didi-sticky-start]': 'hasPinnedStart && !isStacked',
     '[class.didi-sticky-end]': 'hasPinnedEnd && !isStacked',
+    '[class.didi-pager-icons]': 'pagerNav === "icon"',
     '[class.didi-is-striped]': 'striped',
     '[class.didi-is-loading]': 'loading'
   }
@@ -158,6 +161,7 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
   @Input() page = 1;
   @Input() total: number | null = null;
   @Input() pagination: PaginationMode = 'client';
+  @Input() pagerNav: PagerNav = 'label';
   @Input() searchable = false;
   @Input() search = '';
   @Input() searchPlaceholder = '';
@@ -711,6 +715,18 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
     return interpolateLabel(this.resolvedLabels.hideColumn, { label: column.label });
   }
 
+  get canShowAllColumns(): boolean {
+    return this.columns.some((column) => this.isCollapsed(column));
+  }
+
+  showAllColumns(): void {
+    if (!this.canShowAllColumns) {
+      return;
+    }
+
+    this.setHiddenKeys([]);
+  }
+
   sortSpec(column: TableColumn<T>): TableSort<T> | null {
     return this.activeSorts.find((item) => item.key === column.key) ?? null;
   }
@@ -731,6 +747,32 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
     this.syncPage(this.resetPageOnSort);
     this.rebuildDerived();
     this.emitQuery();
+  }
+
+  pagerButtonText(kind: 'first' | 'prev' | 'next' | 'last'): string {
+    if (this.pagerNav === 'icon') {
+      if (kind === 'first') {
+        return '«';
+      }
+      if (kind === 'prev') {
+        return '‹';
+      }
+      if (kind === 'next') {
+        return '›';
+      }
+      return '»';
+    }
+
+    if (kind === 'first') {
+      return this.resolvedLabels.firstPage;
+    }
+    if (kind === 'prev') {
+      return this.resolvedLabels.previous;
+    }
+    if (kind === 'next') {
+      return this.resolvedLabels.next;
+    }
+    return this.resolvedLabels.lastPage;
   }
 
   goToPage(page: number): void {

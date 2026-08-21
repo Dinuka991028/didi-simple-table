@@ -6,6 +6,8 @@
   --didi--header-bg: var(--didi-header-bg, #f8fafc);
   --didi--header-text: var(--didi-header-text, currentColor);
   --didi--hover: var(--didi-hover, #f1f5f9);
+  --didi--stripe: var(--didi-stripe, #f8fafc);
+  --didi--stripe-hover: var(--didi-stripe-hover, #eef2f7);
   --didi--selected: var(--didi-selected, #eff6ff);
   --didi--selected-hover: var(--didi-selected-hover, #dbeafe);
   --didi--accent: var(--didi-accent, currentColor);
@@ -30,6 +32,8 @@
     --didi--border: var(--didi-border, color-mix(in srgb, currentColor 18%, transparent));
     --didi--header-bg: var(--didi-header-bg, color-mix(in srgb, currentColor 6%, transparent));
     --didi--hover: var(--didi-hover, color-mix(in srgb, currentColor 8%, transparent));
+    --didi--stripe: var(--didi-stripe, color-mix(in srgb, currentColor 4%, transparent));
+    --didi--stripe-hover: var(--didi-stripe-hover, color-mix(in srgb, currentColor 10%, transparent));
     --didi--selected: var(--didi-selected, color-mix(in srgb, currentColor 12%, transparent));
     --didi--selected-hover: var(--didi-selected-hover, color-mix(in srgb, currentColor 16%, transparent));
   }
@@ -174,7 +178,15 @@
 }
 
 .didi-simple-table.didi-is-striped tbody tr.didi-data-row:nth-child(even) td {
-  background: var(--didi--header-bg);
+  background: var(--didi--stripe);
+}
+
+.didi-simple-table.didi-is-striped tbody tr.didi-data-row:hover td {
+  background: var(--didi--hover);
+}
+
+.didi-simple-table.didi-is-striped tbody tr.didi-data-row:nth-child(even):hover td {
+  background: var(--didi--stripe-hover);
 }
 
 .didi-simple-table tbody tr.didi-is-clickable {
@@ -390,7 +402,8 @@
 
 .didi-simple-table .didi-pager-actions button,
 .didi-simple-table .didi-export-button,
-.didi-simple-table .didi-column-menu-toggle {
+.didi-simple-table .didi-column-menu-toggle,
+.didi-simple-table .didi-column-reset {
   appearance: none;
   -webkit-appearance: none;
   display: inline-flex;
@@ -414,13 +427,15 @@
 .didi-simple-table .didi-pager-actions button:hover:not(:disabled),
 .didi-simple-table .didi-export-button:hover,
 .didi-simple-table .didi-column-menu-toggle:hover,
-.didi-simple-table .didi-column-menu-toggle:focus-visible {
+.didi-simple-table .didi-column-menu-toggle:focus-visible,
+.didi-simple-table .didi-column-reset:hover {
   border-color: var(--didi--accent);
 }
 
 .didi-simple-table .didi-pager-actions button:focus-visible,
 .didi-simple-table .didi-export-button:focus-visible,
-.didi-simple-table .didi-column-menu-toggle:focus-visible {
+.didi-simple-table .didi-column-menu-toggle:focus-visible,
+.didi-simple-table .didi-column-reset:focus-visible {
   outline: 2px solid var(--didi--focus);
   outline-offset: 2px;
 }
@@ -428,6 +443,14 @@
 .didi-simple-table .didi-pager-actions button:disabled {
   cursor: default;
   opacity: 0.45;
+}
+
+.didi-simple-table.didi-pager-icons .didi-pager-actions button {
+  min-width: 2.25rem;
+  padding-inline: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
 }
 
 .didi-simple-table .didi-table-toolbar {
@@ -615,7 +638,12 @@
 
 .didi-simple-table.didi-is-striped tbody tr.didi-data-row:nth-child(even) td.didi-is-pinned {
   background-color: var(--didi-surface, Canvas);
-  background-image: linear-gradient(var(--didi--header-bg), var(--didi--header-bg));
+  background-image: linear-gradient(var(--didi--stripe), var(--didi--stripe));
+}
+
+.didi-simple-table.didi-is-striped tbody tr.didi-data-row:nth-child(even):hover td.didi-is-pinned {
+  background-color: var(--didi-surface, Canvas);
+  background-image: linear-gradient(var(--didi--stripe-hover), var(--didi--stripe-hover));
 }
 
 .didi-simple-table.didi-is-stacked .didi-table-wrap {
@@ -723,10 +751,10 @@
 
 .didi-simple-table.didi-is-narrow .didi-pager-actions {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   grid-template-areas:
-    'page page'
-    'prev next';
+    'page page page page'
+    'first prev next last';
   gap: 8px;
   width: 100%;
   margin-inline-start: 0;
@@ -739,12 +767,20 @@
   white-space: nowrap;
 }
 
+.didi-simple-table.didi-is-narrow .didi-pager-first {
+  grid-area: first;
+}
+
 .didi-simple-table.didi-is-narrow .didi-pager-prev {
   grid-area: prev;
 }
 
 .didi-simple-table.didi-is-narrow .didi-pager-next {
   grid-area: next;
+}
+
+.didi-simple-table.didi-is-narrow .didi-pager-last {
+  grid-area: last;
 }
 
 .didi-simple-table.didi-is-narrow .didi-pager-actions button {

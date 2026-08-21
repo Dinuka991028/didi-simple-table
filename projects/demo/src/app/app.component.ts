@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { PaginationMode, ResponsiveMode, TableColumn, TableQuery, TableSortState, TableTheme } from 'didi-simple-table';
+import { PaginationMode, PagerNav, ResponsiveMode, TableColumn, TableQuery, TableSortState, TableTheme } from 'didi-simple-table';
 
 interface User {
   name: string;
@@ -161,6 +161,7 @@ export class AppComponent implements OnInit, OnDestroy {
   clicked: User | null = null;
 
   pagination: PaginationMode = 'client';
+  pagerNav: PagerNav = 'label';
   pagingLayout: 'table' | 'cards' = 'table';
   empty = false;
   loading = false;

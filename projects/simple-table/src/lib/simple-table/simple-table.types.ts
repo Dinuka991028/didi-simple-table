@@ -1,6 +1,7 @@
 export type SortDirection = 'asc' | 'desc';
 export type SortType = 'auto' | 'string' | 'number' | 'date';
 export type PaginationMode = 'client' | 'server';
+export type PagerNav = 'label' | 'icon';
 export type SelectionMode = 'single' | 'multiple';
 export type SelectAllMode = 'page' | 'filtered';
 export type ResponsiveMode = 'scroll' | 'stack';
@@ -116,6 +117,8 @@ export interface TableLabels {
   columnsHidden: string;
   previous: string;
   next: string;
+  firstPage: string;
+  lastPage: string;
   rows: string;
   pageOf: string;
   rangeOf: string;
@@ -123,6 +126,7 @@ export interface TableLabels {
   selectAllFiltered: string;
   selectRow: string;
   hideColumn: string;
+  showAllColumns: string;
   sortBy: string;
   sortAsc: string;
   sortDesc: string;
@@ -143,6 +147,8 @@ export const DEFAULT_TABLE_LABELS: TableLabels = {
   columnsHidden: 'Columns ({count} hidden)',
   previous: 'Previous',
   next: 'Next',
+  firstPage: 'First',
+  lastPage: 'Last',
   rows: 'Rows',
   pageOf: 'Page {page} of {total}',
   rangeOf: '{start}–{end} of {total}',
@@ -150,6 +156,7 @@ export const DEFAULT_TABLE_LABELS: TableLabels = {
   selectAllFiltered: 'Select all matching rows',
   selectRow: 'Select row',
   hideColumn: 'Hide {label} column',
+  showAllColumns: 'Show all',
   sortBy: 'Sort by {label}',
   sortAsc: 'Sort {label}, currently ascending',
   sortDesc: 'Sort {label}, currently descending',
