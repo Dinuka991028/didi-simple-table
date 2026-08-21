@@ -13,6 +13,7 @@
 - Column menu **Show all** restores every hidden column in one click.
 - Pager First / Last jumps to the start or end of the pages.
 - `[pagerNav]="'icon'"` switches pager buttons from words to « ‹ › ».
+- Optional toolbar **theme picker** (`themePicker`), off unless the app developer enables it.
 - MIT license. Unit tests run with Karma/Jasmine.
 
 ## 0.1.6

@@ -194,6 +194,9 @@ didi-simple-table {
 | `maxHeight`      | `string \| null`   | `null`         | Max height of the scroll area, for example `'240px'`. Use with `stickyHeader`. |
 | `caption`        | `string`           | `''`           | Accessible table name (visually hidden). |
 | `theme`          | `'inherit' \| 'light' \| 'dark' \| 'teal' \| 'warm' \| 'compact'` | `'inherit'` | `inherit` uses the host font and `currentColor`. Packaged looks: `light`, `dark`, `teal`, `warm`, `compact`. Unknown values fall back to `inherit`. |
+| `themePicker`    | `boolean`          | `false`        | When true, shows a theme select in the table toolbar. Off by default so only apps that want end-user theming show it. |
+| `themeOptions`   | `TableTheme[] \| null` | `null`      | Subset of themes in the picker. Defaults to every packaged theme. |
+| `themeOptionLabels` | `Partial<Record<TableTheme, string>>` | `{}` | Custom names for picker options (for i18n). |
 | `columnCollapse` | `boolean`          | `false`        | When true, users can hide and restore columns from a Columns menu and header controls. |
 | `hiddenColumns`  | `Array<TableField<T>> \| null` | `null` | Keys of collapsed columns. Use with `(hiddenColumnsChange)` or `[(hiddenColumns)]`. |
 | `responsive`     | `'scroll' \| 'stack'` | `'scroll'` | `scroll` keeps the grid and overflows horizontally. `stack` becomes labeled cards when the table is narrower than `breakpoint`. |
@@ -229,6 +232,7 @@ didi-simple-table {
 | `cellEdit`    | `TableCellEdit<T>`              | Emits after an editable cell is committed.       |
 | `expandedChange` | `T[]`                        | Emits expanded rows.                             |
 | `columnOrderChange` | `Array<TableField<T>>`   | Emits after a header drag-reorder.               |
+| `themeChange`    | `TableTheme`                    | Emits when the toolbar theme picker changes. Use with `[(theme)]`. |
 
 ### Templates
 

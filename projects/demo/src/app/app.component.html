@@ -401,24 +401,24 @@ breakpoint="640px"
   </section>
 
   <section id="theme" class="panel">
-    <div class="panel-header">
-      <h2>Theming</h2>
-      <div class="toolbar" role="group" aria-label="Theme">
-        <button type="button" [class.active]="tableTheme === 'inherit'" (click)="tableTheme = 'inherit'">Inherit</button>
-        <button type="button" [class.active]="tableTheme === 'light'" (click)="tableTheme = 'light'">Light</button>
-        <button type="button" [class.active]="tableTheme === 'dark'" (click)="tableTheme = 'dark'">Dark</button>
-        <button type="button" [class.active]="tableTheme === 'teal'" (click)="tableTheme = 'teal'">Teal</button>
-        <button type="button" [class.active]="tableTheme === 'warm'" (click)="tableTheme = 'warm'">Warm</button>
-        <button type="button" [class.active]="tableTheme === 'compact'" (click)="tableTheme = 'compact'">Compact</button>
-      </div>
-    </div>
+    <h2>Theming</h2>
     <p class="explain">
       Default is <code>inherit</code>: the table uses the page font and
       <code>currentColor</code>, so it matches an existing app. Set
       <code>theme="light"</code>, <code>dark</code>, <code>teal</code>,
       <code>warm</code>, or <code>compact</code> for a packaged look.
+      <code>[themePicker]="true"</code> puts a theme select in the table
+      toolbar next to search. Leave it off if the app should pick the theme,
+      not the end user.
     </p>
-    <pre class="code" ngNonBindable>theme="inherit"</pre>
-    <didi-simple-table [theme]="tableTheme" [columns]="basicColumns" [data]="basicUsers"></didi-simple-table>
+    <pre class="code" ngNonBindable>[themePicker]="true"
+[(theme)]="tableTheme"</pre>
+    <didi-simple-table
+      [themePicker]="true"
+      [(theme)]="tableTheme"
+      [searchable]="true"
+      [columns]="basicColumns"
+      [data]="basicUsers"
+    ></didi-simple-table>
   </section>
 </main>

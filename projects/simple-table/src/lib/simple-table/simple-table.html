@@ -3,7 +3,7 @@
   [class.didi-has-sticky]="stickyHeader && !isStacked"
   (copy)="onCopy($event)"
 >
-  <div *ngIf="searchable || columnCollapse || exportable" class="didi-table-toolbar">
+  <div *ngIf="searchable || columnCollapse || exportable || themePicker" class="didi-table-toolbar">
     <label *ngIf="searchable" class="didi-table-search">
       <span class="didi-sr-only">{{ searchPlaceholderText }}</span>
       <input
@@ -16,6 +16,18 @@
       />
     </label>
     <div class="didi-toolbar-actions">
+      <label *ngIf="themePicker" class="didi-theme-picker">
+        <span class="didi-sr-only">{{ resolvedLabels.theme }}</span>
+        <select
+          [value]="resolvedTheme"
+          [attr.aria-label]="resolvedLabels.theme"
+          (change)="onThemeSelect($event)"
+        >
+          <option *ngFor="let option of resolvedThemeOptions" [value]="option">
+            {{ themeOptionLabel(option) }}
+          </option>
+        </select>
+      </label>
       <button
         *ngIf="exportable"
         type="button"

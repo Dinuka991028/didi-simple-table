@@ -139,6 +139,7 @@ export interface TableLabels {
   loading: string;
   rowsPerPage: string;
   pagination: string;
+  theme: string;
 }
 
 export const DEFAULT_TABLE_LABELS: TableLabels = {
@@ -168,7 +169,8 @@ export const DEFAULT_TABLE_LABELS: TableLabels = {
   noResults: 'No matching rows',
   loading: 'Loading...',
   rowsPerPage: 'Rows per page',
-  pagination: 'Table pagination'
+  pagination: 'Table pagination',
+  theme: 'Theme'
 };
 
 export function interpolateLabel(template: string, vars: Record<string, string | number>): string {
