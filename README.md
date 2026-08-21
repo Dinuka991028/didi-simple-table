@@ -14,6 +14,8 @@ npm install didi-simple-table
 
 Peer dependencies: `@angular/core` and `@angular/common` `>=14.0.0 <23.0.0` (Angular 14 through 22).
 
+Supported Angular versions: **14, 15, 16, 17, 18, 19, 20, 21, 22**.
+
 ## Usage
 
 Import `SIMPLE_TABLE_IMPORTS` on the standalone component that uses the table. That array includes the table and the `didiCell` / `didiHeader` / `didiEmpty` / `didiLoading` template directives. Define a row type, then bind `columns` and `data`. `key` is checked against the row type, so typos fail at compile time. Nested fields use dotted paths such as `address.city`.
@@ -161,8 +163,9 @@ didi-simple-table {
 | ---------------- | ------------------ | -------------- | ------------------------------------------------ |
 | `columns`        | `TableColumn<T>[]` | `[]`           | Header labels and which field each column reads. |
 | `data`           | `T[]`              | `[]`           | Rows to render. Full list for client paging, or one page for server paging. |
-| `loading`        | `boolean`          | `false`        | When true, shows the loading state instead of rows. |
-| `emptyMessage`   | `string`           | `'No data'`    | Empty text when there is no custom `didiEmpty` content. |
+| `loading`        | `boolean`          | `false`        | When true, shows an overlay if rows are already visible, or a loading row when the table is empty. |
+| `emptyMessage`   | `string`           | `'No data'`    | Empty text when there is no search/filter and no custom `didiEmpty` content. Override via `labels` too. |
+| `noResultsMessage` | `string`         | `'No matching rows'` | Empty text when search or column filters match nothing. |
 | `loadingMessage` | `string`           | `'Loading...'` | Loading text when there is no custom `didiLoading` content. |
 | `sortable`       | `boolean`          | `false`        | When true, clickable headers sort by that column. |
 | `sort`           | `TableSort<T> \| TableSort<T>[] \| null` | `null` | Current sort. A single spec, or an array when `multiSort` is on. Use with `(sortChange)` or `[(sort)]`. |
@@ -176,11 +179,16 @@ didi-simple-table {
 | `search`         | `string`           | `''`           | Current search text. Use with `(searchChange)` or `[(search)]`. |
 | `searchPlaceholder` | `string`        | `'Search'`     | Placeholder for the search box. |
 | `searchKeys`     | `Array<TableField<T>> \| null` | `null` | Fields to match. Defaults to every column `key`. |
+| `searchDebounce` | `number`           | `300`          | Delay in ms before search emits. `0` is immediate. Enter and clear apply immediately. |
+| `labels`         | `Partial<TableLabels>` | `{}`        | Override pager, search, columns, and aria strings. Use `{count}`, `{label}`, `{page}`, `{total}`, `{start}`, `{end}` placeholders. |
+| `filters`        | `TableFilters<T>`  | `{}`           | Per-column filter values. Use with `(filtersChange)` and `column.filter`. |
 | `resetPageOnSort` | `boolean`         | `true`         | When true, sorting moves back to page 1. |
 | `resetPageOnSearch` | `boolean`       | `true`         | When true, searching moves back to page 1. |
 | `selectable`     | `false \| 'single' \| 'multiple'` | `false` | Row selection. `true` is the same as `'single'`. |
 | `selected`       | `T[]`              | `[]`           | Currently selected rows. Use with `(selectedChange)` or `[(selected)]`. |
-| `identityKey`    | `keyof T & string` | —              | Field used to compare rows after they are recreated (for example from an API). |
+| `identityKey`    | `TableField<T>`    | —              | Field used to compare rows after they are recreated, including nested paths. |
+| `selectOnRowClick` | `boolean`        | `true`         | When false, clicking a row emits `(rowClick)` but does not toggle selection. Use checkboxes to select. |
+| `selectAllMode`  | `'page' \| 'filtered'` | `'page'` | Header checkbox selects the current page, or every matching row. |
 | `stickyHeader`   | `boolean`          | `false`        | When true, header cells stay visible while the table body scrolls. |
 | `maxHeight`      | `string \| null`   | `null`         | Max height of the scroll area, for example `'240px'`. Use with `stickyHeader`. |
 | `caption`        | `string`           | `''`           | Accessible table name (visually hidden). |
@@ -190,6 +198,19 @@ didi-simple-table {
 | `responsive`     | `'scroll' \| 'stack'` | `'scroll'` | `scroll` keeps the grid and overflows horizontally. `stack` becomes labeled cards when the table is narrower than `breakpoint`. |
 | `breakpoint`     | `string`           | `'640px'`      | Width at which `stack` and `hideOnMobile` apply. Measured on the table, not the viewport. |
 | `stickyFirstColumn` | `boolean`       | `false`        | When true, the first column stays visible while the table scrolls horizontally. |
+| `striped`        | `boolean`          | `false`        | Alternate row backgrounds. |
+| `density`        | `'comfortable' \| 'compact' \| null` | `null` | Compact padding without changing the color theme. |
+| `nullPlaceholder`| `string`           | `''`           | Shown when a cell value is null or empty. |
+| `locale`         | `string`           | —              | Used by `formatType` (`number`, `date`, `currency`). |
+| `rowClass`       | `(row) => string \| string[] \| Record<string, boolean>` | — | Extra classes on each data row. |
+| `cellClass`      | `(value, row, column) => ...` | — | Extra classes on each cell. |
+| `expandable`     | `boolean`          | `false`        | Row expand control. Pair with `ng-template didiDetail`. |
+| `groupBy`        | `TableField<T> \| null` | `null`    | Group client rows by a field. |
+| `exportable`     | `boolean`          | `false`        | Shows an Export CSV button. |
+| `columnResize`   | `boolean`          | `false`        | Drag header edges to resize. |
+| `columnReorder`  | `boolean`          | `false`        | Drag headers to reorder. |
+| `virtualScroll`  | `boolean`          | `false`        | Window rows inside `maxHeight`. |
+| `persistKey`     | `string \| null`   | `null`         | Saves hidden columns, order, and widths to `localStorage`. |
 
 ### Outputs
 
@@ -199,10 +220,14 @@ didi-simple-table {
 | `pageChange`  | `number`                        | Emits when the page changes.                     |
 | `pageSizeChange` | `number`                     | Emits when the rows-per-page value changes.      |
 | `searchChange` | `string`                        | Emits when the search box value changes.         |
-| `queryChange` | `TableQuery<T>`                 | Emits `{ page, pageSize, sort, search }` after page, size, sort, or search changes. Use this for API reloads. |
+| `queryChange` | `TableQuery<T>`                 | Emits `{ page, pageSize, sort, search, filters }` after page, size, sort, search, or filter changes. |
 | `rowClick`    | `T`                             | Emits the row when the row is clicked.           |
 | `selectedChange` | `T[]`                        | Emits the selected rows.                         |
 | `hiddenColumnsChange` | `Array<TableField<T>>` | Emits the keys of collapsed columns.        |
+| `filtersChange` | `TableFilters<T>`             | Emits per-column filter values.                  |
+| `cellEdit`    | `TableCellEdit<T>`              | Emits after an editable cell is committed.       |
+| `expandedChange` | `T[]`                        | Emits expanded rows.                             |
+| `columnOrderChange` | `Array<TableField<T>>`   | Emits after a header drag-reorder.               |
 
 ### Templates
 
@@ -212,6 +237,25 @@ didi-simple-table {
 | `ng-template didiHeader="key"` | `let-column` | Custom header for the column whose `key` matches. Also used as the label on stacked cards. |
 | `ng-template didiEmpty`  | none                            | Custom empty content. Omit it, or leave it empty, to use `emptyMessage`. |
 | `ng-template didiLoading`| none                            | Custom loading content. Omit it, or leave it empty, to use `loadingMessage`. |
+| `ng-template didiDetail` | `let-row`                       | Expanded row body when `expandable` is on. |
+| `ng-template didiFooter="key"` | `let-column` (also `rows`, `value`) | Footer cell for a column. |
+
+### `TableColumn<T>`
+
+| Field   | Type                | Description                                      |
+| ------- | ------------------- | ------------------------------------------------ |
+| `key`      | `TableField<T>` | Field on the row, a nested path such as `address.city`, or a virtual key such as `_actions`. |
+| `label`    | `string`           | Header text.                                 |
+| `sortable` | `boolean`          | Set to `false` to disable sorting for this column when the table is sortable. |
+| `width` / `minWidth` | `string` | Column size, for example `'12rem'`. |
+| `align`    | `'start' \| 'center' \| 'end'` | Cell alignment. Use `end` for numbers. |
+| `pinned`   | `boolean`          | Pin this column while scrolling horizontally. |
+| `editable` | `boolean`          | Double-click to edit. Emits `(cellEdit)`. |
+| `filter`   | `boolean \| 'text' \| 'select' \| 'number' \| 'date'` | Show a filter control under the header. |
+| `filterOptions` | `{ label, value }[]` | Options when `filter` is `'select'`. |
+| `format`   | `(value, row) => unknown` | Optional formatter used when there is no `didiCell` template. |
+| `formatType` | `'number' \| 'date' \| 'currency'` | Built-in `Intl` formatting when `format` is omitted. |
+| `footer`   | `(rows) => unknown` | Footer value from the filtered/sorted rows. |
 
 ### `TableColumn<T>`
 
@@ -246,6 +290,7 @@ didi-simple-table {
 | `pageSize` | `number \| null`   | Rows per page, or `null` when paging is off.     |
 | `sort`     | `TableSortState<T>` | Current sort, or `null` when unsorted.          |
 | `search`   | `string`           | Current search text.                             |
+| `filters`  | `TableFilters<T>`  | Per-column filter values.                        |
 
 Listen to `(queryChange)` when the parent loads rows from an API so page, size, sort, and search stay in one handler.
 

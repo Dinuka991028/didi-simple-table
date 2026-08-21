@@ -14,7 +14,6 @@ interface Employee {
   salary: number;
   status: 'Active' | 'Leave';
   address: { city: string; country: string };
-  actions?: unknown;
 }
 
 interface Staff {
@@ -116,7 +115,7 @@ export class AppComponent implements OnInit, OnDestroy {
       format: (value) => '$' + Number(value).toLocaleString()
     },
     { key: 'status', label: 'Status' },
-    { key: 'actions', label: 'Actions', sortable: false }
+    { key: '_actions', label: 'Actions', sortable: false }
   ];
   cellUsers = EMPLOYEES;
   edited: string | null = null;

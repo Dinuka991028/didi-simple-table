@@ -55,12 +55,13 @@ describe('SimpleTableComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Nothing here');
   });
 
-  it('shows the loading template instead of rows', () => {
+  it('shows the loading template over existing rows', () => {
     host.loading = true;
     fixture.detectChanges();
     const text = fixture.nativeElement.textContent as string;
     expect(text).toContain('Please wait');
-    expect(text).not.toContain('Ada');
+    expect(text).toContain('Ada');
+    expect(fixture.nativeElement.querySelector('.didi-table-overlay')).toBeTruthy();
   });
 });
 
@@ -131,7 +132,7 @@ describe('SimpleTableComponent sorting', () => {
   });
 
   it('cycles ascending, descending, then original order', () => {
-    const button = fixture.nativeElement.querySelector('.sort-button') as HTMLButtonElement;
+    const button = fixture.nativeElement.querySelector('.didi-sort-button') as HTMLButtonElement;
 
     button.click();
     fixture.detectChanges();
@@ -191,7 +192,7 @@ describe('SimpleTableComponent typed sorting', () => {
 
     const fixture = TestBed.createComponent(MixSortHostComponent);
     fixture.detectChanges();
-    const buttons = fixture.nativeElement.querySelectorAll('.sort-button') as NodeListOf<HTMLButtonElement>;
+    const buttons = fixture.nativeElement.querySelectorAll('.didi-sort-button') as NodeListOf<HTMLButtonElement>;
 
     buttons[1].click();
     fixture.detectChanges();
@@ -208,6 +209,10 @@ describe('SimpleTableComponent typed sorting', () => {
     buttons[3].click();
     fixture.detectChanges();
     expect(rowNames(fixture)).toEqual(['Grace', 'Ada']);
+
+    buttons[3].click();
+    buttons[3].click();
+    fixture.detectChanges();
 
     fixture.componentInstance.multiSort = true;
     fixture.detectChanges();
@@ -333,6 +338,7 @@ describe('SimpleTableComponent server pagination', () => {
       [columns]="columns"
       [data]="data"
       [searchable]="true"
+      [searchDebounce]="0"
       [searchKeys]="searchKeys"
       [pageSize]="2"
       [page]="page"
@@ -388,8 +394,8 @@ describe('SimpleTableComponent search', () => {
     fixture.detectChanges();
     typeInSearch(fixture, 'example');
 
-    expect(rowNames(fixture)).toEqual(['No data']);
-    expect(fixture.nativeElement.textContent).toContain('No data');
+    expect(rowNames(fixture)).toEqual(['No matching rows']);
+    expect(fixture.nativeElement.textContent).toContain('No matching rows');
   });
 
   it('resets to page 1 on search by default', () => {
@@ -469,7 +475,7 @@ describe('SimpleTableComponent page size and page state', () => {
     fixture.detectChanges();
     expect(rowNames(fixture)).toEqual(['Alan']);
 
-    const sortButton = fixture.nativeElement.querySelector('.sort-button') as HTMLButtonElement;
+    const sortButton = fixture.nativeElement.querySelector('.didi-sort-button') as HTMLButtonElement;
     sortButton.click();
     fixture.detectChanges();
 
@@ -485,6 +491,7 @@ describe('SimpleTableComponent page size and page state', () => {
       [data]="data"
       pagination="server"
       [searchable]="true"
+      [searchDebounce]="0"
       [pageSize]="2"
       [page]="page"
       [total]="total"
@@ -523,7 +530,7 @@ describe('SimpleTableComponent server search', () => {
 });
 
 function typeInSearch(fixture: ComponentFixture<unknown>, value: string): void {
-  const input = fixture.nativeElement.querySelector('.table-search input') as HTMLInputElement;
+  const input = fixture.nativeElement.querySelector('.didi-table-search input') as HTMLInputElement;
   input.value = value;
   input.dispatchEvent(new Event('input'));
   fixture.detectChanges();
@@ -629,7 +636,7 @@ describe('SimpleTableComponent sticky header', () => {
 
     const root = fixture.nativeElement as HTMLElement;
     expect(root.querySelector('caption')?.textContent).toContain('People');
-    expect(root.querySelector('.table-container')?.classList.contains('has-sticky')).toBe(true);
+    expect(root.querySelector('.didi-table-container')?.classList.contains('didi-has-sticky')).toBe(true);
   });
 });
 
@@ -710,11 +717,11 @@ describe('SimpleTableComponent column collapse', () => {
     expect(root.textContent).toContain('Name');
     expect(root.textContent).not.toContain('ada@example.com');
 
-    const toggle = root.querySelector('.column-menu-toggle') as HTMLButtonElement;
+    const toggle = root.querySelector('.didi-column-menu-toggle') as HTMLButtonElement;
     toggle.click();
     fixture.detectChanges();
 
-    const boxes = root.querySelectorAll('.column-menu-item input') as NodeListOf<HTMLInputElement>;
+    const boxes = root.querySelectorAll('.didi-column-menu-item input') as NodeListOf<HTMLInputElement>;
     expect(boxes[0].disabled).toBe(true);
     expect(boxes[1].checked).toBe(false);
     boxes[1].click();
@@ -762,13 +769,14 @@ describe('SimpleTableComponent responsive', () => {
     const table = fixture.nativeElement.querySelector('didi-simple-table') as HTMLElement;
     const component = fixture.debugElement.children[0].componentInstance as SimpleTableComponent<User>;
     component.isNarrow = true;
+    component.refresh();
     fixture.detectChanges();
 
     expect(table.classList.contains('didi-is-stacked')).toBe(true);
     expect(table.classList.contains('didi-is-narrow')).toBe(true);
     expect(table.textContent).toContain('Ada');
     expect(table.textContent).not.toContain('ada@example.com');
-    expect(table.querySelector('.stack-label')?.textContent?.trim()).toBe('Name');
+    expect(table.querySelector('.didi-stack-label')?.textContent?.trim()).toBe('Name');
   });
 
   it('keeps pager prev/next usable in the stacked card layout', async () => {
@@ -782,6 +790,7 @@ describe('SimpleTableComponent responsive', () => {
 
     const component = fixture.debugElement.children[0].componentInstance as SimpleTableComponent<User>;
     component.isNarrow = true;
+    component.refresh();
     fixture.detectChanges();
 
     const root = fixture.nativeElement as HTMLElement;
@@ -801,9 +810,9 @@ describe('SimpleTableComponent responsive', () => {
     expect(prev.disabled).toBe(false);
     expect(next.disabled).toBe(true);
 
-    const container = root.querySelector('.table-container') as HTMLElement;
+    const container = root.querySelector('.didi-table-container') as HTMLElement;
     expect(container.style.maxHeight).toBe('');
-    expect(container.classList.contains('has-sticky')).toBe(false);
+    expect(container.classList.contains('didi-has-sticky')).toBe(false);
   });
 });
 
@@ -858,11 +867,93 @@ describe('SimpleTableComponent customization', () => {
 
     const component = fixture.debugElement.children[0].componentInstance as SimpleTableComponent<CityUser>;
     component.isNarrow = true;
+    component.refresh();
     fixture.detectChanges();
 
     const labels = Array.from(
-      fixture.nativeElement.querySelectorAll('.stack-label') as NodeListOf<HTMLElement>
+      fixture.nativeElement.querySelectorAll('.didi-stack-label') as NodeListOf<HTMLElement>
     ).map((label) => label.textContent?.trim());
     expect(labels).toContain('City ✈');
   });
 });
+
+@Component({
+  template: `
+    <didi-simple-table [columns]="columns" [data]="data" [searchable]="true" [searchDebounce]="300"></didi-simple-table>
+  `
+})
+class DebounceHostComponent {
+  columns: TableColumn<User>[] = [
+    { key: 'name', label: 'Name' },
+    { key: 'email', label: 'Email' }
+  ];
+  data: User[] = [
+    { name: 'Ada', email: 'ada@example.com' },
+    { name: 'Alan', email: 'alan@example.com' }
+  ];
+}
+
+describe('SimpleTableComponent debounce and virtual columns', () => {
+  it('debounces search until the delay elapses', async () => {
+    await TestBed.configureTestingModule({
+      imports: [SimpleTableModule],
+      declarations: [DebounceHostComponent]
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(DebounceHostComponent);
+    fixture.detectChanges();
+    typeInSearch(fixture, 'Alan');
+    expect(rowNames(fixture)).toEqual(['Ada', 'Alan']);
+
+    await new Promise((resolve) => setTimeout(resolve, 320));
+    fixture.detectChanges();
+    expect(rowNames(fixture)).toEqual(['Alan']);
+  });
+
+  it('allows virtual action columns without a row field', async () => {
+    @Component({
+      template: `
+        <didi-simple-table [columns]="columns" [data]="data">
+          <ng-template didiCell="_actions">edit</ng-template>
+        </didi-simple-table>
+      `
+    })
+    class ActionsHostComponent {
+      columns: TableColumn<User>[] = [
+        { key: 'name', label: 'Name' },
+        { key: '_actions', label: 'Actions' }
+      ];
+      data: User[] = [{ name: 'Ada', email: 'ada@example.com' }];
+    }
+
+    await TestBed.configureTestingModule({
+      imports: [SimpleTableModule],
+      declarations: [ActionsHostComponent]
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(ActionsHostComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('edit');
+  });
+
+  it('keeps rows visible under a loading overlay', async () => {
+    @Component({
+      template: `<didi-simple-table [columns]="columns" [data]="data" [loading]="true"></didi-simple-table>`
+    })
+    class OverlayHostComponent {
+      columns: TableColumn<User>[] = [{ key: 'name', label: 'Name' }];
+      data: User[] = [{ name: 'Ada', email: 'ada@example.com' }];
+    }
+
+    await TestBed.configureTestingModule({
+      imports: [SimpleTableModule],
+      declarations: [OverlayHostComponent]
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(OverlayHostComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Ada');
+    expect(fixture.nativeElement.querySelector('.didi-table-overlay')).toBeTruthy();
+  });
+});
+

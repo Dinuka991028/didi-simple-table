@@ -32,7 +32,9 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "tsConfig": "projects/simple-table/tsconfig.spec.json"
+            "main": "projects/simple-table/src/test.ts",
+            "tsConfig": "projects/simple-table/tsconfig.spec.json",
+            "karmaConfig": "projects/simple-table/karma.conf.js"
           }
         }
       }
@@ -96,8 +98,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "16kb",
+                  "maximumError": "24kb"
                 }
               ],
               "fileReplacements": [

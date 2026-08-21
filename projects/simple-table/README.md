@@ -14,6 +14,8 @@ npm install didi-simple-table
 
 Peer dependencies: `@angular/core` and `@angular/common` `>=14.0.0 <23.0.0` (Angular 14 through 22).
 
+Supported Angular versions: **14, 15, 16, 17, 18, 19, 20, 21, 22**.
+
 ## Usage
 
 Import `SIMPLE_TABLE_IMPORTS` on the standalone component that uses the table. That array includes the table and the `didiCell` / `didiHeader` / `didiEmpty` / `didiLoading` template directives. Define a row type, then bind `columns` and `data`. `key` is checked against the row type, so typos fail at compile time. Nested fields use dotted paths such as `address.city`.

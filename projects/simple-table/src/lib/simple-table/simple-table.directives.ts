@@ -1,6 +1,11 @@
 import { Directive, Input, TemplateRef } from '@angular/core';
 
-import { DidiCellContext, DidiHeaderContext } from './simple-table.types';
+import {
+  DidiCellContext,
+  DidiDetailContext,
+  DidiFooterContext,
+  DidiHeaderContext
+} from './simple-table.types';
 
 @Directive({
   selector: 'ng-template[didiCell]',
@@ -36,4 +41,22 @@ export class DidiEmptyDirective {
 })
 export class DidiLoadingDirective {
   constructor(public readonly template: TemplateRef<void>) {}
+}
+
+@Directive({
+  selector: 'ng-template[didiDetail]',
+  standalone: true
+})
+export class DidiDetailDirective {
+  constructor(public readonly template: TemplateRef<DidiDetailContext<unknown>>) {}
+}
+
+@Directive({
+  selector: 'ng-template[didiFooter]',
+  standalone: true
+})
+export class DidiFooterDirective {
+  @Input() didiFooter = '';
+
+  constructor(public readonly template: TemplateRef<DidiFooterContext<unknown>>) {}
 }

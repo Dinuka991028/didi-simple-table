@@ -241,30 +241,30 @@ Do this sequence so install, speed, and i18n land before extra table chrome.
 
 - [x] Peer deps `>=14 <23`  
 - [x] Standalone exports  
-- [ ] Debounced search  
-- [ ] `trackBy` + OnPush + memoized derived data  
-- [ ] `didi-` CSS prefixes  
-- [ ] i18n labels + RTL  
-- [ ] SSR guards  
-- [ ] Runnable unit tests  
-- [ ] Virtual / actions column typing  
-- [ ] LICENSE + version alignment  
+- [x] Debounced search  
+- [x] `trackBy` + OnPush + memoized derived data  
+- [x] `didi-` CSS prefixes  
+- [x] i18n labels + RTL  
+- [x] SSR guards  
+- [x] Runnable unit tests  
+- [x] Virtual / actions column typing  
+- [x] LICENSE + version alignment  
 
 **Should add soon**
 
-- [ ] Column width / align  
-- [ ] Loading overlay  
-- [ ] `rowClass` / `cellClass`  
-- [ ] Click vs select  
-- [ ] Select-all scope  
-- [ ] Distinct empty / no-results  
-- [ ] Footer / summary  
-- [ ] Column filters on `TableQuery`  
+- [x] Column width / align  
+- [x] Loading overlay  
+- [x] `rowClass` / `cellClass`  
+- [x] Click vs select  
+- [x] Select-all scope  
+- [x] Distinct empty / no-results  
+- [x] Footer / summary  
+- [x] Column filters on `TableQuery`  
 
 **Later**
 
-- [ ] Resize / reorder / extra pinned columns  
-- [ ] Expandable rows  
-- [ ] CSV export  
-- [ ] Virtual scroll  
-- [ ] Grouping, inline edit, locale pipes  
+- [x] Resize / reorder / extra pinned columns  
+- [x] Expandable rows  
+- [x] CSV export  
+- [x] Virtual scroll  
+- [x] Grouping, inline edit, locale pipes  
