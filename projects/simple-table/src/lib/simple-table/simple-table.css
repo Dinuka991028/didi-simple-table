@@ -569,29 +569,53 @@
   --didi-header-size: 11px;
 }
 
-.didi-simple-table.didi-sticky-start th.didi-is-pinned,
-.didi-simple-table.didi-sticky-start td.didi-is-pinned {
+.didi-simple-table.didi-has-pins th.didi-is-pinned,
+.didi-simple-table.didi-has-pins td.didi-is-pinned {
   position: sticky;
   z-index: 1;
   background-color: var(--didi-surface, Canvas);
   background-image: linear-gradient(var(--didi--surface), var(--didi--surface));
+}
+
+.didi-simple-table.didi-has-pins th.didi-is-pin-edge,
+.didi-simple-table.didi-has-pins td.didi-is-pin-edge {
   box-shadow: 1px 0 0 var(--didi--border);
 }
 
-.didi-simple-table.didi-sticky-start th.didi-is-pinned {
+[dir='rtl'] .didi-simple-table.didi-has-pins th.didi-is-pin-edge,
+[dir='rtl'] .didi-simple-table.didi-has-pins td.didi-is-pin-edge {
+  box-shadow: -1px 0 0 var(--didi--border);
+}
+
+.didi-simple-table.didi-has-pins th.didi-is-pin-edge-end,
+.didi-simple-table.didi-has-pins td.didi-is-pin-edge-end {
+  box-shadow: -1px 0 0 var(--didi--border);
+}
+
+[dir='rtl'] .didi-simple-table.didi-has-pins th.didi-is-pin-edge-end,
+[dir='rtl'] .didi-simple-table.didi-has-pins td.didi-is-pin-edge-end {
+  box-shadow: 1px 0 0 var(--didi--border);
+}
+
+.didi-simple-table.didi-has-pins th.didi-is-pinned {
   z-index: 3;
   background-color: var(--didi-surface, Canvas);
   background-image: linear-gradient(var(--didi--header-bg), var(--didi--header-bg));
 }
 
-.didi-simple-table.didi-sticky-start tbody tr:hover td.didi-is-pinned {
+.didi-simple-table.didi-has-pins tbody tr:hover td.didi-is-pinned {
   background-color: var(--didi-surface, Canvas);
   background-image: linear-gradient(var(--didi--hover), var(--didi--hover));
 }
 
-.didi-simple-table.didi-sticky-start tbody tr.didi-is-selected td.didi-is-pinned {
+.didi-simple-table.didi-has-pins tbody tr.didi-is-selected td.didi-is-pinned {
   background-color: var(--didi-surface, Canvas);
   background-image: linear-gradient(var(--didi--selected), var(--didi--selected));
+}
+
+.didi-simple-table.didi-is-striped tbody tr.didi-data-row:nth-child(even) td.didi-is-pinned {
+  background-color: var(--didi-surface, Canvas);
+  background-image: linear-gradient(var(--didi--header-bg), var(--didi--header-bg));
 }
 
 .didi-simple-table.didi-is-stacked .didi-table-wrap {

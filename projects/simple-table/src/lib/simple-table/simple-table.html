@@ -77,8 +77,20 @@
       <caption *ngIf="caption" class="didi-sr-only">{{ caption }}</caption>
       <thead>
         <tr>
-          <th *ngIf="expandable" class="didi-expand-cell" scope="col"></th>
-          <th *ngIf="isMultiple" class="didi-select-cell" scope="col">
+          <th
+            *ngIf="expandable"
+            class="didi-expand-cell"
+            scope="col"
+            [class.didi-is-pinned]="isChromePinned"
+            [style.inset-inline-start.px]="isChromePinned ? chromePinOffset('expand') : null"
+          ></th>
+          <th
+            *ngIf="isMultiple"
+            class="didi-select-cell"
+            scope="col"
+            [class.didi-is-pinned]="isChromePinned"
+            [style.inset-inline-start.px]="isChromePinned ? chromePinOffset('select') : null"
+          >
             <input
               type="checkbox"
               [checked]="allVisibleSelected"
@@ -91,8 +103,12 @@
           <th
             *ngFor="let column of visibleColumns; trackBy: trackByColumn"
             scope="col"
+            [attr.data-column-key]="column.key"
             [attr.aria-sort]="ariaSort(column)"
             [class.didi-is-pinned]="isPinned(column)"
+            [class.didi-is-pinned-end]="isPinnedEnd(column)"
+            [class.didi-is-pin-edge]="isPinEdge(column)"
+            [class.didi-is-pin-edge-end]="isPinEndEdge(column)"
             [ngStyle]="columnStyle(column, true)"
             [draggable]="columnReorder"
             (dragstart)="onHeaderDragStart(column, $event)"
@@ -144,9 +160,24 @@
           </th>
         </tr>
         <tr *ngIf="hasFilterRow" class="didi-filter-row">
-          <th *ngIf="expandable"></th>
-          <th *ngIf="isMultiple"></th>
-          <th *ngFor="let column of visibleColumns; trackBy: trackByColumn" [ngStyle]="columnStyle(column)">
+          <th
+            *ngIf="expandable"
+            [class.didi-is-pinned]="isChromePinned"
+            [style.inset-inline-start.px]="isChromePinned ? chromePinOffset('expand') : null"
+          ></th>
+          <th
+            *ngIf="isMultiple"
+            [class.didi-is-pinned]="isChromePinned"
+            [style.inset-inline-start.px]="isChromePinned ? chromePinOffset('select') : null"
+          ></th>
+          <th
+            *ngFor="let column of visibleColumns; trackBy: trackByColumn"
+            [class.didi-is-pinned]="isPinned(column)"
+            [class.didi-is-pinned-end]="isPinnedEnd(column)"
+            [class.didi-is-pin-edge]="isPinEdge(column)"
+            [class.didi-is-pin-edge-end]="isPinEndEdge(column)"
+            [ngStyle]="columnStyle(column, true)"
+          >
             <ng-container *ngIf="column.filter">
               <select
                 *ngIf="filterKind(column) === 'select'; else textFilter"
@@ -213,7 +244,13 @@
               (click)="onRowClick(rowItem.row, rowItem.index, $event)"
               (keydown)="onRowKeydown(rowItem.row, rowItem.index, $event)"
             >
-              <td *ngIf="expandable" class="didi-expand-cell" (click)="$event.stopPropagation()">
+              <td
+                *ngIf="expandable"
+                class="didi-expand-cell"
+                [class.didi-is-pinned]="isChromePinned"
+                [style.inset-inline-start.px]="isChromePinned ? chromePinOffset('expand') : null"
+                (click)="$event.stopPropagation()"
+              >
                 <button
                   type="button"
                   class="didi-expand-button"
@@ -223,7 +260,13 @@
                   {{ isExpanded(rowItem.row) ? '▾' : '▸' }}
                 </button>
               </td>
-              <td *ngIf="isMultiple" class="didi-select-cell" (click)="$event.stopPropagation()">
+              <td
+                *ngIf="isMultiple"
+                class="didi-select-cell"
+                [class.didi-is-pinned]="isChromePinned"
+                [style.inset-inline-start.px]="isChromePinned ? chromePinOffset('select') : null"
+                (click)="$event.stopPropagation()"
+              >
                 <input
                   type="checkbox"
                   [checked]="isSelected(rowItem.row)"
@@ -235,6 +278,9 @@
                 *ngFor="let column of visibleColumns; trackBy: trackByColumn"
                 [attr.data-label]="column.label"
                 [class.didi-is-pinned]="isPinned(column)"
+                [class.didi-is-pinned-end]="isPinnedEnd(column)"
+                [class.didi-is-pin-edge]="isPinEdge(column)"
+                [class.didi-is-pin-edge-end]="isPinEndEdge(column)"
                 [ngStyle]="columnStyle(column)"
                 [ngClass]="cellClasses(rowItem.row, column)"
                 (dblclick)="startEdit(rowItem.row, column, $event)"
@@ -284,9 +330,24 @@
 
       <tfoot *ngIf="hasFooter && !isEmpty && !isStacked">
         <tr>
-          <td *ngIf="expandable"></td>
-          <td *ngIf="isMultiple"></td>
-          <td *ngFor="let column of visibleColumns; trackBy: trackByColumn" [ngStyle]="columnStyle(column)">
+          <td
+            *ngIf="expandable"
+            [class.didi-is-pinned]="isChromePinned"
+            [style.inset-inline-start.px]="isChromePinned ? chromePinOffset('expand') : null"
+          ></td>
+          <td
+            *ngIf="isMultiple"
+            [class.didi-is-pinned]="isChromePinned"
+            [style.inset-inline-start.px]="isChromePinned ? chromePinOffset('select') : null"
+          ></td>
+          <td
+            *ngFor="let column of visibleColumns; trackBy: trackByColumn"
+            [class.didi-is-pinned]="isPinned(column)"
+            [class.didi-is-pinned-end]="isPinnedEnd(column)"
+            [class.didi-is-pin-edge]="isPinEdge(column)"
+            [class.didi-is-pin-edge-end]="isPinEndEdge(column)"
+            [ngStyle]="columnStyle(column)"
+          >
             <ng-container *ngIf="getFooterTemplate(column) as footerTemplate; else defaultFooter">
               <ng-container *ngTemplateOutlet="footerTemplate; context: footerContext(column)"></ng-container>
             </ng-container>

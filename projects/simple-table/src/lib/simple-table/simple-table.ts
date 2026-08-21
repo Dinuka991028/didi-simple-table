@@ -1,6 +1,7 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   AfterContentInit,
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -74,6 +75,7 @@ import {
 export {
   ColumnAlign,
   ColumnFilterType,
+  ColumnPin,
   DEFAULT_TABLE_LABELS,
   Density,
   NestedKeyOf,
@@ -132,13 +134,15 @@ export type TableViewItem<T> = TableViewGroup<T> | TableViewRow<T>;
     '[class.didi-theme-compact]': 'resolvedTheme === "compact" || density === "compact"',
     '[class.didi-is-stacked]': 'isStacked',
     '[class.didi-is-narrow]': 'isNarrow',
-    '[class.didi-sticky-start]': 'hasPinnedColumns && !isStacked',
+    '[class.didi-has-pins]': 'hasPinnedColumns && !isStacked',
+    '[class.didi-sticky-start]': 'hasPinnedStart && !isStacked',
+    '[class.didi-sticky-end]': 'hasPinnedEnd && !isStacked',
     '[class.didi-is-striped]': 'striped',
     '[class.didi-is-loading]': 'loading'
   }
 })
 export class SimpleTableComponent<T extends object = Record<string, unknown>>
-  implements AfterContentInit, OnChanges, OnDestroy, OnInit
+  implements AfterContentInit, AfterViewInit, OnChanges, OnDestroy, OnInit
 {
   @Input() data: T[] = [];
   @Input() columns: TableColumn<T>[] = [];
@@ -248,6 +252,7 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
   private headerTemplates = new Map<string, TemplateRef<DidiHeaderContext<T>>>();
   private footerTemplates = new Map<string, TemplateRef<DidiFooterContext<T>>>();
   private dragKey: TableField<T> | null = null;
+  private measuredWidths: Record<string, number> = {};
   private isBrowser: boolean;
 
   constructor(
@@ -467,8 +472,27 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
     );
   }
 
+  get hasPinnedStart(): boolean {
+    if (this.isStacked) {
+      return false;
+    }
+
+    return (
+      this.stickyFirstColumn ||
+      this.visibleColumns.some((column) => column.pinned === true || column.pinned === 'start')
+    );
+  }
+
+  get hasPinnedEnd(): boolean {
+    return !this.isStacked && this.visibleColumns.some((column) => column.pinned === 'end');
+  }
+
   get hasPinnedColumns(): boolean {
-    return this.stickyFirstColumn || this.visibleColumns.some((column) => column.pinned);
+    return this.hasPinnedStart || this.hasPinnedEnd;
+  }
+
+  get isChromePinned(): boolean {
+    return this.hasPinnedStart;
   }
 
   get selectAllLabel(): string {
@@ -494,6 +518,10 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
     this.restorePersist();
     this.rebuildDerived();
     this.observeWidth();
+  }
+
+  ngAfterViewInit(): void {
+    this.measurePinnedColumns();
   }
 
   ngAfterContentInit(): void {
@@ -545,7 +573,8 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
       changes['groupBy'] ||
       changes['hiddenColumns'] ||
       changes['virtualScroll'] ||
-      changes['maxHeight'];
+      changes['maxHeight'] ||
+      changes['stickyFirstColumn'];
 
     if (rebuild) {
       this.rebuildDerived();
@@ -808,25 +837,82 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
     if (column.minWidth) {
       style['min-width'] = column.minWidth;
     }
-    if (this.isPinned(column) && !this.isStacked) {
+    const side = this.pinSide(column);
+    if (side === 'start') {
       style['inset-inline-start'] = `${this.pinOffset(column)}px`;
     }
-    if (isHeader && this.isPinned(column)) {
+    if (side === 'end') {
+      style['inset-inline-end'] = `${this.pinEndOffset(column)}px`;
+    }
+    if (isHeader && side) {
       style['z-index'] = '3';
     }
     return style;
   }
 
-  isPinned(column: TableColumn<T>): boolean {
+  pinSide(column: TableColumn<T>): 'start' | 'end' | null {
     if (this.isStacked) {
+      return null;
+    }
+
+    if (column.pinned === 'end') {
+      return 'end';
+    }
+
+    if (column.pinned === true || column.pinned === 'start') {
+      return 'start';
+    }
+
+    if (this.stickyFirstColumn && this.visibleColumns[0]?.key === column.key) {
+      return 'start';
+    }
+
+    return null;
+  }
+
+  isPinned(column: TableColumn<T>): boolean {
+    return this.pinSide(column) != null;
+  }
+
+  isPinnedEnd(column: TableColumn<T>): boolean {
+    return this.pinSide(column) === 'end';
+  }
+
+  isPinEdge(column: TableColumn<T>): boolean {
+    if (this.pinSide(column) !== 'start') {
       return false;
     }
 
-    if (column.pinned) {
-      return true;
+    for (let index = this.visibleColumns.length - 1; index >= 0; index -= 1) {
+      const item = this.visibleColumns[index];
+      if (this.pinSide(item) === 'start') {
+        return item.key === column.key;
+      }
     }
 
-    return this.stickyFirstColumn && this.visibleColumns[0]?.key === column.key;
+    return false;
+  }
+
+  isPinEndEdge(column: TableColumn<T>): boolean {
+    if (this.pinSide(column) !== 'end') {
+      return false;
+    }
+
+    for (const item of this.visibleColumns) {
+      if (this.pinSide(item) === 'end') {
+        return item.key === column.key;
+      }
+    }
+
+    return false;
+  }
+
+  chromePinOffset(kind: 'expand' | 'select'): number {
+    if (kind === 'expand') {
+      return 0;
+    }
+
+    return this.expandable ? 40 : 0;
   }
 
   pinOffset(column: TableColumn<T>): number {
@@ -835,15 +921,29 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
       if (item.key === column.key) {
         break;
       }
-      if (this.isPinned(item)) {
+      if (this.pinSide(item) === 'start') {
         offset += this.columnPixelWidth(item);
       }
     }
-    if (this.isMultiple && this.isPinned(column)) {
+    if (this.isMultiple && this.pinSide(column) === 'start') {
       offset += 44;
     }
-    if (this.expandable && this.isPinned(column)) {
+    if (this.expandable && this.pinSide(column) === 'start') {
       offset += 40;
+    }
+    return offset;
+  }
+
+  pinEndOffset(column: TableColumn<T>): number {
+    let offset = 0;
+    for (let index = this.visibleColumns.length - 1; index >= 0; index -= 1) {
+      const item = this.visibleColumns[index];
+      if (item.key === column.key) {
+        break;
+      }
+      if (this.pinSide(item) === 'end') {
+        offset += this.columnPixelWidth(item);
+      }
     }
     return offset;
   }
@@ -1148,9 +1248,49 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
   }
 
   private columnPixelWidth(column: TableColumn<T>): number {
+    const measured = this.measuredWidths[column.key];
+    if (measured) {
+      return measured;
+    }
+
     const raw = this.columnWidths[column.key] || column.width || '140px';
     const parsed = parseFloat(raw);
     return Number.isFinite(parsed) ? parsed : 140;
+  }
+
+  private schedulePinnedMeasure(): void {
+    if (!this.isBrowser || !this.hasPinnedColumns || this.isStacked) {
+      return;
+    }
+
+    queueMicrotask(() => this.measurePinnedColumns());
+  }
+
+  private measurePinnedColumns(): void {
+    if (!this.isBrowser || !this.hasPinnedColumns || this.isStacked) {
+      return;
+    }
+
+    const headers = this.host.nativeElement.querySelectorAll<HTMLElement>(
+      'thead tr:first-child th[data-column-key]'
+    );
+    let changed = false;
+    headers.forEach((header) => {
+      const key = header.getAttribute('data-column-key');
+      if (!key) {
+        return;
+      }
+
+      const width = Math.round(header.getBoundingClientRect().width);
+      if (width > 0 && this.measuredWidths[key] !== width) {
+        this.measuredWidths[key] = width;
+        changed = true;
+      }
+    });
+
+    if (changed) {
+      this.cdr.markForCheck();
+    }
   }
 
   private orderedColumns(): TableColumn<T>[] {
@@ -1218,6 +1358,7 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
     this.visibleColumns = visible.length > 0 ? visible : ordered.slice(0, 1);
     this.buildViewItems();
     this.updateVirtualWindow();
+    this.schedulePinnedMeasure();
     this.cdr.markForCheck();
   }
 
@@ -1428,7 +1569,10 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
       return;
     }
 
-    this.resizeObserver = new ResizeObserver(() => this.updateNarrow());
+    this.resizeObserver = new ResizeObserver(() => {
+      this.updateNarrow();
+      this.measurePinnedColumns();
+    });
     this.resizeObserver.observe(this.host.nativeElement);
   }
 

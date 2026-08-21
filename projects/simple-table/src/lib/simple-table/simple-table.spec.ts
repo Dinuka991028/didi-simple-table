@@ -641,6 +641,94 @@ describe('SimpleTableComponent sticky header', () => {
 });
 
 @Component({
+  template: `
+    <didi-simple-table
+      [columns]="columns"
+      [data]="data"
+      [stickyFirstColumn]="stickyFirst"
+    ></didi-simple-table>
+  `
+})
+class PinnedHostComponent {
+  stickyFirst = false;
+  columns: TableColumn<User>[] = [
+    { key: 'name', label: 'Name', width: '120px' },
+    { key: 'email', label: 'Email', width: '240px' }
+  ];
+  data: User[] = [{ name: 'Ada', email: 'ada@example.com' }];
+}
+
+describe('SimpleTableComponent sticky columns', () => {
+  let fixture: ComponentFixture<PinnedHostComponent>;
+  let host: PinnedHostComponent;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [SimpleTableModule],
+      declarations: [PinnedHostComponent]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(PinnedHostComponent);
+    host = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('pins the first column when stickyFirstColumn is true', () => {
+    host.stickyFirst = true;
+    fixture.detectChanges();
+
+    const table = fixture.nativeElement.querySelector('didi-simple-table') as HTMLElement;
+    const headers = fixture.nativeElement.querySelectorAll('thead tr:first-child th') as NodeListOf<HTMLElement>;
+
+    expect(table.classList.contains('didi-sticky-start')).toBe(true);
+    expect(headers[0].classList.contains('didi-is-pinned')).toBe(true);
+    expect(headers[0].classList.contains('didi-is-pin-edge')).toBe(true);
+    expect(headers[1].classList.contains('didi-is-pinned')).toBe(false);
+  });
+
+  it('pins any columns marked pinned, not only the first', () => {
+    host.columns = [
+      { key: 'name', label: 'Name', pinned: true, width: '120px' },
+      { key: 'email', label: 'Email', pinned: true, width: '240px' }
+    ];
+    fixture.detectChanges();
+
+    const headers = fixture.nativeElement.querySelectorAll('thead tr:first-child th') as NodeListOf<HTMLElement>;
+    const cells = fixture.nativeElement.querySelectorAll('tbody td') as NodeListOf<HTMLElement>;
+
+    expect(headers[0].classList.contains('didi-is-pinned')).toBe(true);
+    expect(headers[1].classList.contains('didi-is-pinned')).toBe(true);
+    expect(headers[0].classList.contains('didi-is-pin-edge')).toBe(false);
+    expect(headers[1].classList.contains('didi-is-pin-edge')).toBe(true);
+    expect(headers[1].style.insetInlineStart).toBe('120px');
+    expect(cells[0].classList.contains('didi-is-pinned')).toBe(true);
+    expect(cells[1].classList.contains('didi-is-pinned')).toBe(true);
+  });
+
+  it('pins identifier columns on the start and action columns on the end', () => {
+    host.columns = [
+      { key: 'name', label: 'Name', pinned: true, width: '120px' },
+      { key: 'email', label: 'Email', width: '240px' },
+      { key: '_actions', label: 'Actions', pinned: 'end', width: '80px' }
+    ];
+    fixture.detectChanges();
+
+    const table = fixture.nativeElement.querySelector('didi-simple-table') as HTMLElement;
+    const headers = fixture.nativeElement.querySelectorAll('thead tr:first-child th') as NodeListOf<HTMLElement>;
+
+    expect(table.classList.contains('didi-sticky-start')).toBe(true);
+    expect(table.classList.contains('didi-sticky-end')).toBe(true);
+    expect(headers[0].classList.contains('didi-is-pinned')).toBe(true);
+    expect(headers[0].classList.contains('didi-is-pin-edge')).toBe(true);
+    expect(headers[1].classList.contains('didi-is-pinned')).toBe(false);
+    expect(headers[2].classList.contains('didi-is-pinned')).toBe(true);
+    expect(headers[2].classList.contains('didi-is-pinned-end')).toBe(true);
+    expect(headers[2].classList.contains('didi-is-pin-edge-end')).toBe(true);
+    expect(headers[2].style.insetInlineEnd).toBe('0px');
+  });
+});
+
+@Component({
   template: `<didi-simple-table [columns]="columns" [data]="data" [theme]="theme"></didi-simple-table>`
 })
 class ThemeHostComponent {
