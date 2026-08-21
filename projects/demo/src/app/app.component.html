@@ -8,6 +8,7 @@
     </p>
     <nav class="toc" aria-label="Features">
       <a href="#typed">Columns</a>
+      <a href="#striped">Striped rows</a>
       <a href="#cells">Customization</a>
       <a href="#status">Empty &amp; loading</a>
       <a href="#sorting">Sorting</a>
@@ -32,6 +33,21 @@
     <pre class="code" ngNonBindable>[columns]="columns"
 [data]="users"</pre>
     <didi-simple-table [columns]="basicColumns" [data]="basicUsers"></didi-simple-table>
+  </section>
+
+  <section id="striped" class="panel">
+    <h2>Striped rows</h2>
+    <p class="explain">
+      <code>[striped]="true"</code> paints every other row a near-white tint
+      so you can follow a line across the table. Hover is the same color,
+      just a little stronger.
+    </p>
+    <pre class="code" ngNonBindable>[striped]="true"</pre>
+    <didi-simple-table
+      [columns]="basicColumns"
+      [data]="stickyUsers"
+      [striped]="true"
+    ></didi-simple-table>
   </section>
 
   <section id="cells" class="panel">
@@ -238,6 +254,14 @@ caption="People"</pre>
           <button type="button" [class.active]="!keepPage" (click)="setKeepPage(false)">Reset page</button>
           <button type="button" [class.active]="keepPage" (click)="setKeepPage(true)">Keep page</button>
         </div>
+        <div class="toolbar" role="group" aria-label="Pager buttons">
+          <button type="button" [class.active]="pagerNav === 'label'" (click)="pagerNav = 'label'">
+            Labels
+          </button>
+          <button type="button" [class.active]="pagerNav === 'icon'" (click)="pagerNav = 'icon'">
+            Icons
+          </button>
+        </div>
         <div class="toolbar" role="group" aria-label="Layout">
           <button type="button" [class.active]="pagingLayout === 'table'" (click)="pagingLayout = 'table'">
             Table
@@ -250,7 +274,10 @@ caption="People"</pre>
     </div>
     <p class="explain">
       Set <code>[pageSize]</code> to show a pager. <code>[pageSizeOptions]</code>
-      adds a rows-per-page control. <code>[searchable]</code> adds a search box.
+      adds a rows-per-page control. The pager has First, Previous, Next, and
+      Last so you can jump to either end. Switch
+      <code>pagerNav</code> between <code>'label'</code> (First / Previous) and
+      <code>'icon'</code> (« ‹ › »). Screen readers still hear the word labels.
       Switch modes with <code>[pagination]="'client'"</code> or
       <code>[pagination]="'server'"</code>. <strong>Cards</strong> uses
       <code>responsive="stack"</code> in a phone-width frame so you can try the
@@ -294,6 +321,7 @@ responsive="stack"
         [pageSizeOptions]="pageSizeOptions"
         [page]="page"
         [pagination]="pagination"
+        [pagerNav]="pagerNav"
         [total]="isServer ? total : null"
         [resetPageOnSort]="!keepPage"
         [resetPageOnSearch]="!keepPage"
@@ -315,10 +343,11 @@ responsive="stack"
     <p class="explain">
       Wide tables can hide extra columns. Set
       <code>[columnCollapse]="true"</code> for a Columns menu and a hide
-      control on each header. <code>hidden: true</code> starts a column
-      collapsed. <code>collapsible: false</code> keeps a column always visible
-      (Name below). Bind <code>[(hiddenColumns)]</code> if the parent should
-      remember what is hidden.
+      control on each header. After you hide some, <code>Show all</code>
+      brings every column back in one click. <code>hidden: true</code> starts a
+      column collapsed. <code>collapsible: false</code> keeps a column always
+      visible (Name below). Bind <code>[(hiddenColumns)]</code> if the parent
+      should remember what is hidden.
     </p>
     <pre class="code" ngNonBindable>[columnCollapse]="true"
 
@@ -348,8 +377,8 @@ responsive="stack"
       scrolling. Set <code>pinned: true</code> on any other columns you want
       frozen as well. Set <code>hideOnMobile: true</code> on a column to drop it
       automatically in the narrow view (Team and City below). Pagination stays
-      under the cards: range and rows-per-page on one row, Previous / Next on
-      the next.
+      under the cards: range and rows-per-page on one row, First / Previous /
+      Next / Last on the next.
     </p>
     <pre class="code" ngNonBindable>responsive="stack"
 breakpoint="640px"
