@@ -9,6 +9,7 @@
 - `labels` for i18n, logical CSS for RTL, `color-mix` fallbacks, SSR guards.
 - Virtual column keys (`_actions`), nested `identityKey`, `selectOnRowClick`, `selectAllMode`, loading overlay, distinct empty / no-results.
 - Column width/align/pin/filter/footer, row/cell classes, expandable rows, grouping, CSV export, resize/reorder, virtual scroll, `persistKey`, locale `formatType`.
+- Pin identifier columns with `pinned: true` / `'start'`, and action columns with `pinned: 'end'`. `[stickyFirstColumn]` still pins the first column.
 - MIT license. Unit tests run with Karma/Jasmine.
 
 ## 0.1.6

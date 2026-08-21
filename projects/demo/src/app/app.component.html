@@ -13,6 +13,7 @@
       <a href="#sorting">Sorting</a>
       <a href="#rows">Rows</a>
       <a href="#sticky">Sticky header</a>
+      <a href="#sticky-columns">Sticky columns</a>
       <a href="#paging">Pagination &amp; search</a>
       <a href="#columns-collapse">Collapse columns</a>
       <a href="#mobile">Mobile</a>
@@ -196,6 +197,27 @@ caption="People"</pre>
     ></didi-simple-table>
   </section>
 
+  <section id="sticky-columns" class="panel">
+    <h2>Sticky columns</h2>
+    <p class="explain">
+      Pin the identifier on the start and actions on the end. Middle columns
+      scroll. <code>pinned: true</code> or <code>'start'</code> freezes from
+      the left; <code>pinned: 'end'</code> freezes from the right. You can pin
+      more than one column on each side.
+    </p>
+    <pre class="code" ngNonBindable>{{ '{' }} key: 'name', label: 'Name', pinned: true {{ '}' }}
+{{ '{' }} key: 'status', label: 'Status', pinned: 'end' {{ '}' }}
+{{ '{' }} key: '_actions', label: 'Actions', pinned: 'end' {{ '}' }}</pre>
+    <didi-simple-table
+      [columns]="pinnedColumns"
+      [data]="staffRows"
+    >
+      <ng-template didiCell="_actions">
+        <button type="button" class="action-btn">Edit</button>
+      </ng-template>
+    </didi-simple-table>
+  </section>
+
   <section id="paging" class="panel">
     <div class="panel-header">
       <h2>Pagination &amp; search</h2>
@@ -323,7 +345,8 @@ responsive="stack"
       <code>breakpoint</code> (default <code>640px</code>).
       <code>responsive="scroll"</code> keeps the grid and scrolls sideways.
       <code>[stickyFirstColumn]="true"</code> pins the first column while
-      scrolling. Set <code>hideOnMobile: true</code> on a column to drop it
+      scrolling. Set <code>pinned: true</code> on any other columns you want
+      frozen as well. Set <code>hideOnMobile: true</code> on a column to drop it
       automatically in the narrow view (Team and City below). Pagination stays
       under the cards: range and rows-per-page on one row, Previous / Next on
       the next.

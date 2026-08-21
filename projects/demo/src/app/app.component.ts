@@ -146,6 +146,15 @@ export class AppComponent implements OnInit, OnDestroy {
   headerSort: TableSortState<SortPerson> = null;
   multiSort = false;
   stickyUsers = USERS;
+  pinnedColumns: TableColumn<Staff>[] = [
+    { key: 'name', label: 'Name', pinned: true, minWidth: '10rem' },
+    { key: 'email', label: 'Email', minWidth: '16rem' },
+    { key: 'role', label: 'Role', minWidth: '10rem' },
+    { key: 'team', label: 'Team', minWidth: '10rem' },
+    { key: 'city', label: 'City', minWidth: '14rem' },
+    { key: 'status', label: 'Status', pinned: 'end', minWidth: '7rem' },
+    { key: '_actions', label: 'Actions', pinned: 'end', minWidth: '6rem' }
+  ];
 
   selectionMode: false | 'single' | 'multiple' = 'single';
   selected: User[] = [];

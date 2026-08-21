@@ -97,11 +97,11 @@ Set `[pageSize]` to paginate. Switch with `[pagination]="'client'"` or `[paginat
 
 `(rowClick)` emits the row you clicked. `[selectable]="'single'"` or `"'multiple'"` highlights rows; bind `[(selected)]` to keep them. Use `identityKey` so selection still matches after the API returns new objects.
 
-`[stickyHeader]="true"` with `maxHeight` keeps headers visible while rows scroll. Sticky headers and a sticky first column use an opaque background so rows do not show through. `caption` names the table for assistive tech.
+`[stickyHeader]="true"` with `maxHeight` keeps headers visible while rows scroll. Sticky headers and pinned columns use an opaque background so rows do not show through. `caption` names the table for assistive tech.
 
 `[columnCollapse]="true"` lets users hide extra columns. Set `hidden: true` on a column to start it collapsed, or `collapsible: false` to keep it always visible.
 
-On small screens, `responsive="stack"` turns each row into a labeled card when the table is narrower than `breakpoint`. Card labels use the same `didiHeader` template as the column title (so translations apply), or `column.label` if there is no template. `maxHeight` / sticky header are ignored while stacked so the pager stays under the cards. `responsive="scroll"` keeps the grid and scrolls sideways; `[stickyFirstColumn]="true"` pins the first column. Set `hideOnMobile: true` on a column to drop it automatically in the narrow view.
+On small screens, `responsive="stack"` turns each row into a labeled card when the table is narrower than `breakpoint`. Card labels use the same `didiHeader` template as the column title (so translations apply), or `column.label` if there is no template. `maxHeight` / sticky header are ignored while stacked so the pager stays under the cards. `responsive="scroll"` keeps the grid and scrolls sideways; `[stickyFirstColumn]="true"` pins the first column. Set `pinned: true` (or `'start'`) on identifier columns and `pinned: 'end'` on action columns so the middle can scroll. Set `hideOnMobile: true` on a column to drop it automatically in the narrow view.
 
 By default the table **inherits** the host app’s font and text color (`theme="inherit"`). Set `theme="light"` (or `dark`, `teal`, `warm`, `compact`) for a packaged look. You can still override CSS variables on `didi-simple-table`, or add a class and target inner elements (`th`, `td`, `.didi-pager`).
 
@@ -197,7 +197,7 @@ didi-simple-table {
 | `hiddenColumns`  | `Array<TableField<T>> \| null` | `null` | Keys of collapsed columns. Use with `(hiddenColumnsChange)` or `[(hiddenColumns)]`. |
 | `responsive`     | `'scroll' \| 'stack'` | `'scroll'` | `scroll` keeps the grid and overflows horizontally. `stack` becomes labeled cards when the table is narrower than `breakpoint`. |
 | `breakpoint`     | `string`           | `'640px'`      | Width at which `stack` and `hideOnMobile` apply. Measured on the table, not the viewport. |
-| `stickyFirstColumn` | `boolean`       | `false`        | When true, the first column stays visible while the table scrolls horizontally. |
+| `stickyFirstColumn` | `boolean`       | `false`        | When true, the first visible column stays pinned while the table scrolls horizontally. To pin other columns, set `pinned` on them. |
 | `striped`        | `boolean`          | `false`        | Alternate row backgrounds. |
 | `density`        | `'comfortable' \| 'compact' \| null` | `null` | Compact padding without changing the color theme. |
 | `nullPlaceholder`| `string`           | `''`           | Shown when a cell value is null or empty. |
@@ -249,7 +249,7 @@ didi-simple-table {
 | `sortable` | `boolean`          | Set to `false` to disable sorting for this column when the table is sortable. |
 | `width` / `minWidth` | `string` | Column size, for example `'12rem'`. |
 | `align`    | `'start' \| 'center' \| 'end'` | Cell alignment. Use `end` for numbers. |
-| `pinned`   | `boolean`          | Pin this column while scrolling horizontally. |
+| `pinned`   | `boolean \| 'start' \| 'end'` | Pin while scrolling horizontally. `true` / `'start'` freeze from the left (identifiers). `'end'` freezes from the right (actions). You can pin several on each side. |
 | `editable` | `boolean`          | Double-click to edit. Emits `(cellEdit)`. |
 | `filter`   | `boolean \| 'text' \| 'select' \| 'number' \| 'date'` | Show a filter control under the header. |
 | `filterOptions` | `{ label, value }[]` | Options when `filter` is `'select'`. |
@@ -270,6 +270,7 @@ didi-simple-table {
 | `hidden`   | `boolean`          | Set to `true` to start the column collapsed. |
 | `collapsible` | `boolean`       | Set to `false` to keep the column always visible when `columnCollapse` is on. |
 | `hideOnMobile` | `boolean`      | Set to `true` to hide the column when the table is narrower than `breakpoint`. |
+| `pinned`   | `boolean \| 'start' \| 'end'` | Pin while scrolling horizontally. `true` / `'start'` freeze from the left (identifiers). `'end'` freezes from the right (actions). You can pin several on each side. |
 
 `T` defaults to `Record<string, unknown>` if you do not pass a row type.
 

@@ -6,6 +6,7 @@ export type SelectAllMode = 'page' | 'filtered';
 export type ResponsiveMode = 'scroll' | 'stack';
 export type Density = 'comfortable' | 'compact';
 export type ColumnAlign = 'start' | 'center' | 'end';
+export type ColumnPin = boolean | 'start' | 'end';
 export type ColumnFilterType = 'text' | 'select' | 'number' | 'date';
 export type FormatType = 'number' | 'date' | 'currency';
 
@@ -50,7 +51,7 @@ export interface TableColumn<T> {
   width?: string;
   minWidth?: string;
   align?: ColumnAlign;
-  pinned?: boolean;
+  pinned?: ColumnPin;
   editable?: boolean;
   filter?: boolean | ColumnFilterType;
   filterOptions?: TableFilterOption[];
