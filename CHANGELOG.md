@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- GitHub Pages homepage is the live Angular demo instead of the README.
 - README and npm listing now position the library as a lightweight Angular data table, with discovery keywords and a 1,200-row GitHub Pages demo.
 
 ## 0.2.0

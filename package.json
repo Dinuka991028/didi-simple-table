@@ -7,6 +7,7 @@
     "build": "ng build simple-table",
     "build:demo": "ng build demo",
     "build:pages": "ng build demo --configuration production --base-href /didi-simple-table/",
+    "build:site": "ng build demo --configuration production --base-href /didi-simple-table/site/ --output-path site",
     "watch": "ng build simple-table --watch --configuration development",
     "test": "ng test simple-table --no-watch --browsers=ChromeHeadless"
   },
