@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 import { DidiCellDirective, DidiEmptyDirective, DidiHeaderDirective, DidiLoadingDirective } from './simple-table.directives';
 import { SimpleTableComponent } from './simple-table';
 
-const TABLE_DIRECTIVES = [
+/** Import this array on a standalone component to use the table and its templates. */
+export const SIMPLE_TABLE_IMPORTS = [
   SimpleTableComponent,
   DidiCellDirective,
   DidiHeaderDirective,
@@ -13,8 +13,7 @@ const TABLE_DIRECTIVES = [
 ];
 
 @NgModule({
-  declarations: [...TABLE_DIRECTIVES],
-  imports: [CommonModule],
-  exports: [...TABLE_DIRECTIVES]
+  imports: [...SIMPLE_TABLE_IMPORTS],
+  exports: [...SIMPLE_TABLE_IMPORTS]
 })
 export class SimpleTableModule {}

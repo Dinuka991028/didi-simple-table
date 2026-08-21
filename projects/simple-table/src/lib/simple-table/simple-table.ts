@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
   AfterContentInit,
   Component,
@@ -52,6 +53,8 @@ export {
 
 @Component({
   selector: 'didi-simple-table',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './simple-table.html',
   styleUrls: ['./simple-table.css'],
   encapsulation: ViewEncapsulation.None,

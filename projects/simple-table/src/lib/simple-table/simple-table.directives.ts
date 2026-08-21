@@ -3,7 +3,8 @@ import { Directive, Input, TemplateRef } from '@angular/core';
 import { DidiCellContext, DidiHeaderContext } from './simple-table.types';
 
 @Directive({
-  selector: 'ng-template[didiCell]'
+  selector: 'ng-template[didiCell]',
+  standalone: true
 })
 export class DidiCellDirective {
   @Input() didiCell = '';
@@ -12,7 +13,8 @@ export class DidiCellDirective {
 }
 
 @Directive({
-  selector: 'ng-template[didiHeader]'
+  selector: 'ng-template[didiHeader]',
+  standalone: true
 })
 export class DidiHeaderDirective {
   @Input() didiHeader = '';
@@ -21,14 +23,16 @@ export class DidiHeaderDirective {
 }
 
 @Directive({
-  selector: 'ng-template[didiEmpty]'
+  selector: 'ng-template[didiEmpty]',
+  standalone: true
 })
 export class DidiEmptyDirective {
   constructor(public readonly template: TemplateRef<void>) {}
 }
 
 @Directive({
-  selector: 'ng-template[didiLoading]'
+  selector: 'ng-template[didiLoading]',
+  standalone: true
 })
 export class DidiLoadingDirective {
   constructor(public readonly template: TemplateRef<void>) {}

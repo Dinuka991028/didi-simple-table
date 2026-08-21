@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CommonModule } from '@angular/common';
 
-import { DidiCellDirective, DidiEmptyDirective, DidiHeaderDirective, DidiLoadingDirective } from './simple-table.directives';
 import { SimpleTableComponent } from './simple-table';
+import { SimpleTableModule } from './simple-table.module';
 import { TableColumn, TableQuery } from './simple-table.types';
 
 interface User {
@@ -35,15 +34,8 @@ describe('SimpleTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [
-        HostComponent,
-        SimpleTableComponent,
-        DidiCellDirective,
-        DidiHeaderDirective,
-        DidiEmptyDirective,
-        DidiLoadingDirective
-      ]
+      imports: [SimpleTableModule],
+      declarations: [HostComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(HostComponent);
@@ -91,13 +83,8 @@ describe('SimpleTableComponent blank status templates', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [
-        BlankStatusTemplateHostComponent,
-        SimpleTableComponent,
-        DidiEmptyDirective,
-        DidiLoadingDirective
-      ]
+      imports: [SimpleTableModule],
+      declarations: [BlankStatusTemplateHostComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(BlankStatusTemplateHostComponent);
@@ -135,8 +122,8 @@ describe('SimpleTableComponent sorting', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [SortHostComponent, SimpleTableComponent]
+      imports: [SimpleTableModule],
+      declarations: [SortHostComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(SortHostComponent);
@@ -198,8 +185,8 @@ class MixSortHostComponent {
 describe('SimpleTableComponent typed sorting', () => {
   it('sorts numbers, dates, custom order, and stacked columns', async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [MixSortHostComponent, SimpleTableComponent]
+      imports: [SimpleTableModule],
+      declarations: [MixSortHostComponent]
     }).compileComponents();
 
     const fixture = TestBed.createComponent(MixSortHostComponent);
@@ -256,8 +243,8 @@ describe('SimpleTableComponent pagination', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [PageHostComponent, SimpleTableComponent]
+      imports: [SimpleTableModule],
+      declarations: [PageHostComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PageHostComponent);
@@ -319,8 +306,8 @@ describe('SimpleTableComponent server pagination', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [ServerPageHostComponent, SimpleTableComponent]
+      imports: [SimpleTableModule],
+      declarations: [ServerPageHostComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ServerPageHostComponent);
@@ -378,8 +365,8 @@ describe('SimpleTableComponent search', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [SearchHostComponent, SimpleTableComponent]
+      imports: [SimpleTableModule],
+      declarations: [SearchHostComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(SearchHostComponent);
@@ -452,8 +439,8 @@ describe('SimpleTableComponent page size and page state', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [PageSizeHostComponent, SimpleTableComponent]
+      imports: [SimpleTableModule],
+      declarations: [PageSizeHostComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PageSizeHostComponent);
@@ -522,8 +509,8 @@ class ServerSearchHostComponent {
 describe('SimpleTableComponent server search', () => {
   it('emits search without filtering the provided page', async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [ServerSearchHostComponent, SimpleTableComponent]
+      imports: [SimpleTableModule],
+      declarations: [ServerSearchHostComponent]
     }).compileComponents();
 
     const fixture = TestBed.createComponent(ServerSearchHostComponent);
@@ -575,8 +562,8 @@ describe('SimpleTableComponent selection', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [SelectHostComponent, SimpleTableComponent]
+      imports: [SimpleTableModule],
+      declarations: [SelectHostComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(SelectHostComponent);
@@ -633,8 +620,8 @@ class StickyHostComponent {
 describe('SimpleTableComponent sticky header', () => {
   it('exposes a caption and a sticky scroll area', async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [StickyHostComponent, SimpleTableComponent]
+      imports: [SimpleTableModule],
+      declarations: [StickyHostComponent]
     }).compileComponents();
 
     const fixture = TestBed.createComponent(StickyHostComponent);
@@ -658,8 +645,8 @@ class ThemeHostComponent {
 describe('SimpleTableComponent theme', () => {
   it('adds a host class for a predefined theme', async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [ThemeHostComponent, SimpleTableComponent]
+      imports: [SimpleTableModule],
+      declarations: [ThemeHostComponent]
     }).compileComponents();
 
     const fixture = TestBed.createComponent(ThemeHostComponent);
@@ -676,8 +663,8 @@ describe('SimpleTableComponent theme', () => {
 
   it('inherits host styles by default', async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [ThemeHostComponent, SimpleTableComponent]
+      imports: [SimpleTableModule],
+      declarations: [ThemeHostComponent]
     }).compileComponents();
 
     const fixture = TestBed.createComponent(ThemeHostComponent);
@@ -712,8 +699,8 @@ class CollapseHostComponent {
 describe('SimpleTableComponent column collapse', () => {
   it('hides columns marked hidden and lets the user restore them', async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [CollapseHostComponent, SimpleTableComponent]
+      imports: [SimpleTableModule],
+      declarations: [CollapseHostComponent]
     }).compileComponents();
 
     const fixture = TestBed.createComponent(CollapseHostComponent);
@@ -765,8 +752,8 @@ class StackHostComponent {
 describe('SimpleTableComponent responsive', () => {
   it('stacks rows and hides hideOnMobile columns when narrow', async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [StackHostComponent, SimpleTableComponent]
+      imports: [SimpleTableModule],
+      declarations: [StackHostComponent]
     }).compileComponents();
 
     const fixture = TestBed.createComponent(StackHostComponent);
@@ -786,8 +773,8 @@ describe('SimpleTableComponent responsive', () => {
 
   it('keeps pager prev/next usable in the stacked card layout', async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [StackHostComponent, SimpleTableComponent]
+      imports: [SimpleTableModule],
+      declarations: [StackHostComponent]
     }).compileComponents();
 
     const fixture = TestBed.createComponent(StackHostComponent);
@@ -846,13 +833,8 @@ class NestedHostComponent {
 describe('SimpleTableComponent customization', () => {
   it('supports nested keys, formatters, and custom headers', async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [
-        NestedHostComponent,
-        SimpleTableComponent,
-        DidiCellDirective,
-        DidiHeaderDirective
-      ]
+      imports: [SimpleTableModule],
+      declarations: [NestedHostComponent]
     }).compileComponents();
 
     const fixture = TestBed.createComponent(NestedHostComponent);
@@ -867,13 +849,8 @@ describe('SimpleTableComponent customization', () => {
 
   it('uses custom header templates as stacked card labels', async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [
-        NestedHostComponent,
-        SimpleTableComponent,
-        DidiCellDirective,
-        DidiHeaderDirective
-      ]
+      imports: [SimpleTableModule],
+      declarations: [NestedHostComponent]
     }).compileComponents();
 
     const fixture = TestBed.createComponent(NestedHostComponent);

@@ -12,30 +12,15 @@ Pass in columns and row data. The table renders headers, cells, empty and loadin
 npm install didi-simple-table
 ```
 
-Peer dependencies: `@angular/core` and `@angular/common` `^14.0.0`.
+Peer dependencies: `@angular/core` and `@angular/common` `>=14.0.0 <23.0.0` (Angular 14 through 22).
 
 ## Usage
 
-Import `SimpleTableModule` in the module that will use the table.
-
-```ts
-import { NgModule } from '@angular/core';
-import { SimpleTableModule } from 'didi-simple-table';
-
-import { UsersComponent } from './users.component';
-
-@NgModule({
-  declarations: [UsersComponent],
-  imports: [SimpleTableModule]
-})
-export class UsersModule {}
-```
-
-Define a row type, then bind `columns` and `data`. `key` is checked against the row type, so typos fail at compile time. Nested fields use dotted paths such as `address.city`.
+Import `SIMPLE_TABLE_IMPORTS` on the standalone component that uses the table. That array includes the table and the `didiCell` / `didiHeader` / `didiEmpty` / `didiLoading` template directives. Define a row type, then bind `columns` and `data`. `key` is checked against the row type, so typos fail at compile time. Nested fields use dotted paths such as `address.city`.
 
 ```ts
 import { Component } from '@angular/core';
-import { TableColumn } from 'didi-simple-table';
+import { SIMPLE_TABLE_IMPORTS, TableColumn } from 'didi-simple-table';
 
 interface User {
   name: string;
@@ -45,6 +30,8 @@ interface User {
 
 @Component({
   selector: 'app-users',
+  standalone: true,
+  imports: [...SIMPLE_TABLE_IMPORTS],
   template: `
     <didi-simple-table
       [columns]="columns"
@@ -81,6 +68,21 @@ export class UsersComponent {
     { name: 'Grace Hopper', email: 'grace@example.com', role: 'Admiral' }
   ];
 }
+```
+
+NgModule apps can import `SimpleTableModule` instead. It re-exports the same standalone component and directives.
+
+```ts
+import { NgModule } from '@angular/core';
+import { SimpleTableModule } from 'didi-simple-table';
+
+import { UsersComponent } from './users.component';
+
+@NgModule({
+  declarations: [UsersComponent],
+  imports: [SimpleTableModule]
+})
+export class UsersModule {}
 ```
 
 Columns without a `didiCell` template still print the field value. Use `format` on a column for a simple formatter, `didiHeader` for a custom header, and `didiCell` for buttons, icons, or conditional styles. If `loading` is true, the loading state replaces the rows. If `loading` is false and `data` is empty, the empty state is shown instead. With `[sortable]="true"`, click a header to cycle ascending, descending, and the original order. Strings, numbers, and dates sort automatically; set `sortType` or `compare` when you need control. `[multiSort]="true"` sorts by more than one column. Server paging leaves `data` as-is and emits `(sortChange)` so the parent can reload.
@@ -140,6 +142,14 @@ didi-simple-table {
 ```
 
 ## API
+
+### Import
+
+| Export | Use |
+| --- | --- |
+| `SIMPLE_TABLE_IMPORTS` | Spread into a standalone component `imports` array. Includes the table and template directives. |
+| `SimpleTableModule` | Import in an `NgModule` (or in `imports` of a standalone component). Re-exports the same pieces. |
+| `SimpleTableComponent` | Standalone table. Import this plus the template directives, or use the array / module above. |
 
 ### Selector
 
