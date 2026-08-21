@@ -781,7 +781,7 @@ describe('SimpleTableComponent responsive', () => {
     expect(table.classList.contains('didi-is-narrow')).toBe(true);
     expect(table.textContent).toContain('Ada');
     expect(table.textContent).not.toContain('ada@example.com');
-    expect(table.querySelector('td')?.getAttribute('data-label')).toBe('Name');
+    expect(table.querySelector('.stack-label')?.textContent?.trim()).toBe('Name');
   });
 
   it('keeps pager prev/next usable in the stacked card layout', async () => {
@@ -828,7 +828,7 @@ interface CityUser {
 
 @Component({
   template: `
-    <didi-simple-table [columns]="columns" [data]="data">
+    <didi-simple-table [columns]="columns" [data]="data" responsive="stack">
       <ng-template didiHeader="address.city">City ✈</ng-template>
       <ng-template didiCell="name" let-row let-value="value">{{ value }}*</ng-template>
     </didi-simple-table>
@@ -863,5 +863,29 @@ describe('SimpleTableComponent customization', () => {
     expect(text).toContain('London');
     expect(text).toContain('$120000');
     expect(text).toContain('City ✈');
+  });
+
+  it('uses custom header templates as stacked card labels', async () => {
+    await TestBed.configureTestingModule({
+      imports: [CommonModule],
+      declarations: [
+        NestedHostComponent,
+        SimpleTableComponent,
+        DidiCellDirective,
+        DidiHeaderDirective
+      ]
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(NestedHostComponent);
+    fixture.detectChanges();
+
+    const component = fixture.debugElement.children[0].componentInstance as SimpleTableComponent<CityUser>;
+    component.isNarrow = true;
+    fixture.detectChanges();
+
+    const labels = Array.from(
+      fixture.nativeElement.querySelectorAll('.stack-label') as NodeListOf<HTMLElement>
+    ).map((label) => label.textContent?.trim());
+    expect(labels).toContain('City ✈');
   });
 });

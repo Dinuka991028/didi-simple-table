@@ -140,10 +140,18 @@
               />
             </td>
             <td *ngFor="let column of visibleColumns" [attr.data-label]="column.label">
-              <ng-container *ngIf="getCellTemplate(column) as cellTemplate; else defaultCell">
-                <ng-container *ngTemplateOutlet="cellTemplate; context: cellContext(row, column)"></ng-container>
-              </ng-container>
-              <ng-template #defaultCell>{{ getCellValue(row, column) }}</ng-template>
+              <span *ngIf="isStacked" class="stack-label">
+                <ng-container *ngIf="getHeaderTemplate(column) as headerTemplate; else defaultStackLabel">
+                  <ng-container *ngTemplateOutlet="headerTemplate; context: headerContext(column)"></ng-container>
+                </ng-container>
+                <ng-template #defaultStackLabel>{{ column.label }}</ng-template>
+              </span>
+              <span class="stack-value">
+                <ng-container *ngIf="getCellTemplate(column) as cellTemplate; else defaultCell">
+                  <ng-container *ngTemplateOutlet="cellTemplate; context: cellContext(row, column)"></ng-container>
+                </ng-container>
+                <ng-template #defaultCell>{{ getCellValue(row, column) }}</ng-template>
+              </span>
             </td>
           </tr>
         </ng-container>

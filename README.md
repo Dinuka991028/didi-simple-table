@@ -97,7 +97,7 @@ Set `[pageSize]` to paginate. Switch with `[pagination]="'client'"` or `[paginat
 
 `[columnCollapse]="true"` lets users hide extra columns. Set `hidden: true` on a column to start it collapsed, or `collapsible: false` to keep it always visible.
 
-On small screens, `responsive="stack"` turns each row into a labeled card when the table is narrower than `breakpoint`. `maxHeight` / sticky header are ignored while stacked so the pager stays under the cards. `responsive="scroll"` keeps the grid and scrolls sideways; `[stickyFirstColumn]="true"` pins the first column. Set `hideOnMobile: true` on a column to drop it automatically in the narrow view.
+On small screens, `responsive="stack"` turns each row into a labeled card when the table is narrower than `breakpoint`. Card labels use the same `didiHeader` template as the column title (so translations apply), or `column.label` if there is no template. `maxHeight` / sticky header are ignored while stacked so the pager stays under the cards. `responsive="scroll"` keeps the grid and scrolls sideways; `[stickyFirstColumn]="true"` pins the first column. Set `hideOnMobile: true` on a column to drop it automatically in the narrow view.
 
 By default the table **inherits** the host app’s font and text color (`theme="inherit"`). Set `theme="light"` (or `dark`, `teal`, `warm`, `compact`) for a packaged look. You can still override CSS variables on `didi-simple-table`, or add a class and target inner elements (`th`, `td`, `.didi-pager`).
 
@@ -199,7 +199,7 @@ didi-simple-table {
 | Template                 | Context                         | Description |
 | ------------------------ | ------------------------------- | ----------- |
 | `ng-template didiCell="key"` | `let-row` (also `row`, `column`, `value`) | Custom cell for the column whose `key` matches. `value` is the resolved field, including nested paths. |
-| `ng-template didiHeader="key"` | `let-column` | Custom header for the column whose `key` matches. |
+| `ng-template didiHeader="key"` | `let-column` | Custom header for the column whose `key` matches. Also used as the label on stacked cards. |
 | `ng-template didiEmpty`  | none                            | Custom empty content. Omit it, or leave it empty, to use `emptyMessage`. |
 | `ng-template didiLoading`| none                            | Custom loading content. Omit it, or leave it empty, to use `loadingMessage`. |
 

@@ -600,12 +600,23 @@
   gap: 12px;
 }
 
-.didi-simple-table.didi-is-stacked tbody td::before {
-  content: attr(data-label);
+.didi-simple-table .stack-label {
+  display: none;
+}
+
+.didi-simple-table.didi-is-stacked .stack-label {
+  display: block;
   flex: 0 0 36%;
+  min-width: 0;
   color: var(--didi--header-text);
   font-size: var(--didi-header-size);
   font-weight: 600;
+}
+
+.didi-simple-table.didi-is-stacked .stack-value {
+  flex: 1;
+  min-width: 0;
+  text-align: end;
 }
 
 .didi-simple-table.didi-is-stacked tbody td:last-child {
@@ -614,11 +625,6 @@
 
 .didi-simple-table.didi-is-stacked .select-cell {
   justify-content: flex-start;
-}
-
-.didi-simple-table.didi-is-stacked .select-cell::before,
-.didi-simple-table.didi-is-stacked .status-cell::before {
-  content: none;
 }
 
 .didi-simple-table.didi-is-stacked .status-cell {
