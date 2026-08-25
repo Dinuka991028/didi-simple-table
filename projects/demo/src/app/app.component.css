@@ -42,6 +42,88 @@ h1 {
   text-underline-offset: 3px;
 }
 
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0 0;
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.cta-icon {
+  flex-shrink: 0;
+}
+
+.cta-star {
+  background: #0f172a;
+  color: #fff;
+}
+
+.cta-star:hover,
+.cta-star:focus-visible {
+  background: #1e293b;
+  color: #fbbf24;
+}
+
+.cta-sponsor {
+  border: 1px solid #f9a8d4;
+  background: #fff;
+  color: #be185d;
+}
+
+.cta-sponsor:hover,
+.cta-sponsor:focus-visible {
+  background: #fdf2f8;
+  color: #9d174d;
+}
+
+.support-note {
+  margin: 10px 0 0;
+  max-width: 62ch;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.support-banner {
+  padding: 24px;
+  margin-top: 8px;
+  border: 1px solid #f9a8d4;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fff7fb 0%, #fff 70%);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.support-banner h2 {
+  margin: 0 0 8px;
+}
+
+.support-banner p {
+  margin: 0;
+  max-width: 62ch;
+  color: #475569;
+  line-height: 1.55;
+}
+
+.support-banner .cta-row {
+  margin-top: 16px;
+}
+
+.support-banner:target {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
 .install {
   margin: 12px 0 0;
 }

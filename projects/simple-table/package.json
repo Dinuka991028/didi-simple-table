@@ -32,6 +32,10 @@
   "bugs": {
     "url": "https://github.com/Dinuka991028/didi-simple-table/issues"
   },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/Dinuka991028"
+  },
   "peerDependencies": {
     "@angular/common": ">=14.0.0 <23.0.0",
     "@angular/core": ">=14.0.0 <23.0.0"
