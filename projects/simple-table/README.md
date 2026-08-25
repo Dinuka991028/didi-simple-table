@@ -3,6 +3,16 @@
 The lightweight Angular table for everyday applications.
 
 [**Live Demo →**](https://dinuka991028.github.io/didi-simple-table/)
+·
+[**★ Star**](https://github.com/Dinuka991028/didi-simple-table)
+·
+[**♥ Sponsor**](https://github.com/sponsors/Dinuka991028)
+
+[![npm version](https://img.shields.io/npm/v/didi-simple-table)](https://www.npmjs.com/package/didi-simple-table)
+[![GitHub stars](https://img.shields.io/github/stars/Dinuka991028/didi-simple-table?style=social)](https://github.com/Dinuka991028/didi-simple-table)
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-ea4aaa?logo=GitHub)](https://github.com/sponsors/Dinuka991028)
+
+If this table is useful, please **[star the repo](https://github.com/Dinuka991028/didi-simple-table)** — it helps other Angular developers find it. You can also **[sponsor on GitHub](https://github.com/sponsors/Dinuka991028)** to keep the project going.
 
 You do not need AG Grid, PrimeNG, or Angular Material for a normal CRUD/admin table. Pass in columns and row data. The table handles the rest.
 
@@ -431,3 +441,12 @@ npm run build
 ```
 
 The library build output is written to `dist/simple-table`.
+
+## Support
+
+If **didi-simple-table** helps your project, a GitHub star is the nicest thanks — it makes the library easier for others to discover.
+
+- [★ Star the repository](https://github.com/Dinuka991028/didi-simple-table)
+- [♥ Sponsor via GitHub Sponsors](https://github.com/sponsors/Dinuka991028)
+
+Sponsoring is optional. Stars and issues already help a lot. Sponsorship supports continued maintenance so the table stays free and independent.
