@@ -105,9 +105,15 @@ describe('SimpleTableComponent blank status templates', () => {
 });
 
 @Component({
-  template: `<didi-simple-table [columns]="columns" [data]="data" [sortable]="true"></didi-simple-table>`
+  template: `<didi-simple-table
+    [columns]="columns"
+    [data]="data"
+    [sortable]="true"
+    [sortIcons]="sortIcons"
+  ></didi-simple-table>`
 })
 class SortHostComponent {
+  sortIcons: 'hover' | 'always' | 'never' = 'hover';
   columns: TableColumn<User>[] = [
     { key: 'name', label: 'Name' },
     { key: 'email', label: 'Email' }
@@ -145,6 +151,38 @@ describe('SimpleTableComponent sorting', () => {
     button.click();
     fixture.detectChanges();
     expect(rowNames(fixture)).toEqual(['Grace', 'Ada']);
+  });
+
+  it('hides inactive sort arrows until hover by default', () => {
+    const table = fixture.nativeElement.querySelector('didi-simple-table') as HTMLElement;
+    expect(table.classList.contains('didi-sort-icons-always')).toBe(false);
+    expect(table.classList.contains('didi-sort-icons-never')).toBe(false);
+    expect(table.querySelector('.didi-sort-icon')).toBeTruthy();
+  });
+
+  it('keeps sort arrows visible when sortIcons is always', () => {
+    fixture.componentInstance.sortIcons = 'always';
+    fixture.detectChanges();
+
+    const table = fixture.nativeElement.querySelector('didi-simple-table') as HTMLElement;
+    expect(table.classList.contains('didi-sort-icons-always')).toBe(true);
+    expect(table.querySelector('.didi-sort-icon')).toBeTruthy();
+  });
+
+  it('hides sort arrows but still sorts when sortIcons is never', () => {
+    fixture.componentInstance.sortIcons = 'never';
+    fixture.detectChanges();
+
+    const table = fixture.nativeElement.querySelector('didi-simple-table') as HTMLElement;
+    const icon = table.querySelector('.didi-sort-icon') as HTMLElement;
+    const button = table.querySelector('.didi-sort-button') as HTMLButtonElement;
+
+    expect(table.classList.contains('didi-sort-icons-never')).toBe(true);
+    expect(getComputedStyle(icon).display).toBe('none');
+
+    button.click();
+    fixture.detectChanges();
+    expect(rowNames(fixture)).toEqual(['Ada', 'Grace']);
   });
 });
 
@@ -918,6 +956,89 @@ describe('SimpleTableComponent column collapse', () => {
     expect(root.textContent).toContain('ada@example.com');
     expect(fixture.componentInstance.hidden).toEqual([]);
     expect(root.querySelector('.didi-column-reset')).toBeNull();
+  });
+});
+
+@Component({
+  template: `
+    <didi-simple-table
+      [columns]="columns"
+      [data]="data"
+      [columnCollapse]="true"
+      [headerHideButtons]="headerHideButtons"
+      (hiddenColumnsChange)="hidden = $event"
+    ></didi-simple-table>
+  `
+})
+class HeaderHideHostComponent {
+  headerHideButtons: 'hover' | 'always' | 'never' = 'hover';
+  hidden: string[] = [];
+  columns: TableColumn<User>[] = [
+    { key: 'name', label: 'Name', collapsible: false },
+    { key: 'email', label: 'Email' }
+  ];
+  data: User[] = [{ name: 'Ada', email: 'ada@example.com' }];
+}
+
+describe('SimpleTableComponent header hide buttons', () => {
+  async function createHost() {
+    await TestBed.configureTestingModule({
+      imports: [SimpleTableModule],
+      declarations: [HeaderHideHostComponent]
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(HeaderHideHostComponent);
+    fixture.detectChanges();
+    return fixture;
+  }
+
+  it('keeps header hide controls hover-only by default and still hides a column', async () => {
+    const fixture = await createHost();
+    const root = fixture.nativeElement as HTMLElement;
+    const table = root.querySelector('didi-simple-table') as HTMLElement;
+    const hide = root.querySelector('.didi-collapse-button') as HTMLButtonElement;
+
+    expect(table.classList.contains('didi-hide-buttons-always')).toBe(false);
+    expect(hide).toBeTruthy();
+    expect(hide.getAttribute('aria-label')).toBe('Hide Email column');
+
+    hide.click();
+    fixture.detectChanges();
+
+    expect(root.textContent).not.toContain('ada@example.com');
+    expect(fixture.componentInstance.hidden).toEqual(['email']);
+  });
+
+  it('shows header hide controls when headerHideButtons is always', async () => {
+    const fixture = await createHost();
+    fixture.componentInstance.headerHideButtons = 'always';
+    fixture.detectChanges();
+
+    const table = fixture.nativeElement.querySelector('didi-simple-table') as HTMLElement;
+    expect(table.classList.contains('didi-hide-buttons-always')).toBe(true);
+    expect(table.querySelector('.didi-collapse-button')).toBeTruthy();
+  });
+
+  it('removes header hide controls when headerHideButtons is never', async () => {
+    const fixture = await createHost();
+    fixture.componentInstance.headerHideButtons = 'never';
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    expect(root.querySelector('.didi-collapse-button')).toBeNull();
+
+    const toggle = root.querySelector('.didi-column-menu-toggle') as HTMLButtonElement;
+    toggle.click();
+    fixture.detectChanges();
+
+    const boxes = root.querySelectorAll('.didi-column-menu-item input') as NodeListOf<HTMLInputElement>;
+    expect(boxes[1].checked).toBe(true);
+    boxes[1].click();
+    fixture.detectChanges();
+
+    expect(root.textContent).not.toContain('ada@example.com');
+    expect(fixture.componentInstance.hidden).toEqual(['email']);
+    expect(root.querySelector('.didi-column-menu-toggle')).toBeTruthy();
   });
 });
 

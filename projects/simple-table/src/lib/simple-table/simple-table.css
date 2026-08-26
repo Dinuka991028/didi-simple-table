@@ -173,6 +173,28 @@
   color: var(--didi--accent);
 }
 
+.didi-simple-table.didi-sort-icons-never .didi-sort-icon {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .didi-simple-table:not(.didi-sort-icons-always):not(.didi-sort-icons-never)
+    .didi-sort-icon:not(.didi-is-active) {
+    opacity: 0;
+  }
+
+  .didi-simple-table:not(.didi-sort-icons-always):not(.didi-sort-icons-never)
+    thead
+    th:hover
+    .didi-sort-icon,
+  .didi-simple-table:not(.didi-sort-icons-always):not(.didi-sort-icons-never)
+    thead
+    th:focus-within
+    .didi-sort-icon {
+    opacity: 1;
+  }
+}
+
 .didi-simple-table tbody tr:hover td {
   background: var(--didi--hover);
 }
@@ -294,6 +316,29 @@
   font-size: 16px;
   line-height: 1;
   cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .didi-simple-table:not(.didi-hide-buttons-always) .didi-collapse-button {
+    position: absolute;
+    inset-inline-end: 4px;
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .didi-simple-table:not(.didi-hide-buttons-always) thead th:hover .didi-th-inner,
+  .didi-simple-table:not(.didi-hide-buttons-always) thead th:focus-within .didi-th-inner {
+    padding-inline-end: 22px;
+  }
+
+  .didi-simple-table:not(.didi-hide-buttons-always) thead th:hover .didi-collapse-button,
+  .didi-simple-table:not(.didi-hide-buttons-always) thead th:focus-within .didi-collapse-button {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 .didi-simple-table .didi-collapse-button:hover,

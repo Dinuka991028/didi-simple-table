@@ -41,11 +41,13 @@ import {
   DidiDetailContext,
   DidiFooterContext,
   DidiHeaderContext,
+  HeaderHideButtons,
   PaginationMode,
   PagerNav,
   ResponsiveMode,
   SelectAllMode,
   SelectionMode,
+  SortIcons,
   TABLE_THEMES,
   TableCellEdit,
   TableColumn,
@@ -79,12 +81,14 @@ export {
   ColumnPin,
   DEFAULT_TABLE_LABELS,
   Density,
+  HeaderHideButtons,
   NestedKeyOf,
   PaginationMode,
   PagerNav,
   ResponsiveMode,
   SelectAllMode,
   SelectionMode,
+  SortIcons,
   SortType,
   TABLE_THEMES,
   TableCellEdit,
@@ -141,7 +145,10 @@ export type TableViewItem<T> = TableViewGroup<T> | TableViewRow<T>;
     '[class.didi-sticky-end]': 'hasPinnedEnd && !isStacked',
     '[class.didi-pager-icons]': 'pagerNav === "icon"',
     '[class.didi-is-striped]': 'striped',
-    '[class.didi-is-loading]': 'loading'
+    '[class.didi-is-loading]': 'loading',
+    '[class.didi-hide-buttons-always]': 'headerHideButtons === "always"',
+    '[class.didi-sort-icons-always]': 'sortIcons === "always"',
+    '[class.didi-sort-icons-never]': 'sortIcons === "never"'
   }
 })
 export class SimpleTableComponent<T extends object = Record<string, unknown>>
@@ -154,6 +161,7 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
   @Input() noResultsMessage = '';
   @Input() loadingMessage = '';
   @Input() sortable = false;
+  @Input() sortIcons: SortIcons = 'hover';
   @Input() sort: TableSortState<T> = null;
   @Input() multiSort = false;
   @Input() pageSize: number | null = null;
@@ -182,6 +190,7 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
   @Input() themeOptions: TableTheme[] | null = null;
   @Input() themeOptionLabels: Partial<Record<TableTheme, string>> = {};
   @Input() columnCollapse = false;
+  @Input() headerHideButtons: HeaderHideButtons = 'hover';
   @Input() hiddenColumns: Array<TableField<T>> | null = null;
   @Input() responsive: ResponsiveMode = 'scroll';
   @Input() breakpoint = '640px';
@@ -659,6 +668,10 @@ export class SimpleTableComponent<T extends object = Record<string, unknown>>
 
   canHideColumn(column: TableColumn<T>): boolean {
     return this.columnCollapse && column.collapsible !== false && this.visibleColumns.length > 1;
+  }
+
+  showHeaderHideButton(column: TableColumn<T>): boolean {
+    return this.headerHideButtons !== 'never' && this.canHideColumn(column);
   }
 
   canToggleColumn(column: TableColumn<T>): boolean {

@@ -231,9 +231,16 @@
   <section id="sorting" class="panel">
     <div class="panel-header">
       <h2>Sorting</h2>
-      <div class="toolbar" role="group" aria-label="Sort mode">
-        <button type="button" [class.active]="!multiSort" (click)="setMultiSort(false)">Single</button>
-        <button type="button" [class.active]="multiSort" (click)="setMultiSort(true)">Multi</button>
+      <div class="tools">
+        <div class="toolbar" role="group" aria-label="Sort mode">
+          <button type="button" [class.active]="!multiSort" (click)="setMultiSort(false)">Single</button>
+          <button type="button" [class.active]="multiSort" (click)="setMultiSort(true)">Multi</button>
+        </div>
+        <div class="toolbar" role="group" aria-label="Sort icons">
+          <button type="button" [class.active]="sortIcons === 'hover'" (click)="sortIcons = 'hover'">Hover</button>
+          <button type="button" [class.active]="sortIcons === 'always'" (click)="sortIcons = 'always'">Always</button>
+          <button type="button" [class.active]="sortIcons === 'never'" (click)="sortIcons = 'never'">Never</button>
+        </div>
       </div>
     </div>
     <p class="explain">
@@ -244,6 +251,10 @@
       below is junior → mid → senior). Server paging does not sort locally;
       handle it in <code>(sortChange)</code>.
       <code>[multiSort]="true"</code> stacks columns: click Name, then Age.
+      Sort arrows default to hover. The active column keeps its arrow so you
+      can see the current sort. Set <code>[sortIcons]="'always'"</code> to keep
+      every arrow visible, or <code>'never'</code> to hide them; headers stay
+      clickable.
     </p>
     <p class="explain state">
       Current <code>sort</code>:
@@ -251,6 +262,7 @@
     </p>
     <pre class="code" ngNonBindable>[sortable]="true"
 [multiSort]="true"
+[sortIcons]="'hover'"
 sortType: 'number'
 compare: (a, b) =&gt; rankOrder[a] - rankOrder[b]</pre>
     <didi-simple-table
@@ -258,6 +270,7 @@ compare: (a, b) =&gt; rankOrder[a] - rankOrder[b]</pre>
       [data]="sortUsers"
       [sortable]="true"
       [multiSort]="multiSort"
+      [sortIcons]="sortIcons"
       [sort]="headerSort"
       (sortChange)="onHeaderSort($event)"
     ></didi-simple-table>
@@ -456,17 +469,47 @@ responsive="stack"
   </section>
 
   <section id="columns-collapse" class="panel">
-    <h2>Collapse columns</h2>
+    <div class="panel-header">
+      <h2>Collapse columns</h2>
+      <div class="toolbar" role="group" aria-label="Header hide buttons">
+        <button
+          type="button"
+          [class.active]="headerHideButtons === 'hover'"
+          (click)="headerHideButtons = 'hover'"
+        >
+          Hover
+        </button>
+        <button
+          type="button"
+          [class.active]="headerHideButtons === 'always'"
+          (click)="headerHideButtons = 'always'"
+        >
+          Always
+        </button>
+        <button
+          type="button"
+          [class.active]="headerHideButtons === 'never'"
+          (click)="headerHideButtons = 'never'"
+        >
+          Menu only
+        </button>
+      </div>
+    </div>
     <p class="explain">
       Wide tables can hide extra columns. Set
-      <code>[columnCollapse]="true"</code> for a Columns menu and a hide
-      control on each header. After you hide some, <code>Show all</code>
-      brings every column back in one click. <code>hidden: true</code> starts a
-      column collapsed. <code>collapsible: false</code> keeps a column always
-      visible (Name below). Bind <code>[(hiddenColumns)]</code> if the parent
-      should remember what is hidden.
+      <code>[columnCollapse]="true"</code> for a Columns menu. Hover a header
+      to reveal the hide control (the default). Set
+      <code>[headerHideButtons]="'always'"</code> if you want the × visible on
+      every collapsible column, or <code>'never'</code> to remove it so users
+      only show and hide columns from the Columns menu. After you hide some,
+      <code>Show all</code> brings every column back in one click.
+      <code>hidden: true</code> starts a column collapsed.
+      <code>collapsible: false</code> keeps a column always visible (Name
+      below). Bind <code>[(hiddenColumns)]</code> if the parent should remember
+      what is hidden.
     </p>
     <pre class="code" ngNonBindable>[columnCollapse]="true"
+[headerHideButtons]="'hover'"
 
 {{ '{' }} key: 'name', label: 'Name', collapsible: false {{ '}' }}
 {{ '{' }} key: 'city', label: 'City', hidden: true {{ '}' }}</pre>
@@ -474,6 +517,7 @@ responsive="stack"
       [columns]="staffColumns"
       [data]="staffRows"
       [columnCollapse]="true"
+      [headerHideButtons]="headerHideButtons"
     ></didi-simple-table>
   </section>
 

@@ -161,7 +161,7 @@ export class UsersModule {}
 
 ## Features
 
-Columns without a `didiCell` template still print the field value. Use `format` on a column for a simple formatter, `didiHeader` for a custom header, and `didiCell` for buttons, icons, or conditional styles. If `loading` is true, the loading state replaces the rows. If `loading` is false and `data` is empty, the empty state is shown instead. With `[sortable]="true"`, click a header to cycle ascending, descending, and the original order. Strings, numbers, and dates sort automatically; set `sortType` or `compare` when you need control. `[multiSort]="true"` sorts by more than one column. Server paging leaves `data` as-is and emits `(sortChange)` so the parent can reload.
+Columns without a `didiCell` template still print the field value. Use `format` on a column for a simple formatter, `didiHeader` for a custom header, and `didiCell` for buttons, icons, or conditional styles. If `loading` is true, the loading state replaces the rows. If `loading` is false and `data` is empty, the empty state is shown instead. With `[sortable]="true"`, click a header to cycle ascending, descending, and the original order. Inactive sort arrows show on hover (`sortIcons="hover"`, the default); the active column keeps its arrow. Set `[sortIcons]="'always'"` to keep every arrow visible, or `'never'` to hide them — headers stay clickable. Strings, numbers, and dates sort automatically; set `sortType` or `compare` when you need control. `[multiSort]="true"` sorts by more than one column. Server paging leaves `data` as-is and emits `(sortChange)` so the parent can reload.
 
 Set `[pageSize]` to paginate. The pager includes First, Previous, Next, and Last. Set `[pagerNav]="'icon'"` for « ‹ › » instead of words. Switch with `[pagination]="'client'"` or `[pagination]="'server'"`. `[pageSizeOptions]` adds a rows-per-page selector. `[searchable]` adds a search box; client mode filters locally, server mode emits the term so you can query the API.
 
@@ -173,7 +173,7 @@ Set `[pageSize]` to paginate. The pager includes First, Previous, Next, and Last
 
 `[stickyHeader]="true"` with `maxHeight` keeps headers visible while rows scroll. Sticky headers and pinned columns use an opaque background so rows do not show through. `caption` names the table for assistive tech.
 
-`[columnCollapse]="true"` lets users hide extra columns. After hiding some, **Show all** restores the full set in one click. Set `hidden: true` on a column to start it collapsed, or `collapsible: false` to keep it always visible.
+`[columnCollapse]="true"` lets users hide extra columns from a Columns menu. Hover a header to reveal a hide control (`headerHideButtons="hover"`, the default). Set `[headerHideButtons]="'always'"` to keep the × visible on every collapsible column, or `'never'` to remove header hide buttons so users only use the Columns menu. After hiding some, **Show all** restores the full set in one click. Set `hidden: true` on a column to start it collapsed, or `collapsible: false` to keep it always visible.
 
 On small screens, `responsive="stack"` turns each row into a labeled card when the table is narrower than `breakpoint`. Card labels use the same `didiHeader` template as the column title (so translations apply), or `column.label` if there is no template. `maxHeight` / sticky header are ignored while stacked so the pager stays under the cards. `responsive="scroll"` keeps the grid and scrolls sideways; `[stickyFirstColumn]="true"` pins the first column. Set `pinned: true` (or `'start'`) on identifier columns and `pinned: 'end'` on action columns so the middle can scroll. Set `hideOnMobile: true` on a column to drop it automatically in the narrow view.
 
@@ -242,6 +242,7 @@ didi-simple-table {
 | `noResultsMessage` | `string`         | `'No matching rows'` | Empty text when search or column filters match nothing. |
 | `loadingMessage` | `string`           | `'Loading...'` | Loading text when there is no custom `didiLoading` content. |
 | `sortable`       | `boolean`          | `false`        | When true, clickable headers sort by that column. |
+| `sortIcons`      | `'hover' \| 'always' \| 'never'` | `'hover'` | Inactive sort arrows show on hover/focus. The active column keeps its arrow. `'always'` shows every arrow. `'never'` hides them; headers stay clickable. |
 | `sort`           | `TableSort<T> \| TableSort<T>[] \| null` | `null` | Current sort. A single spec, or an array when `multiSort` is on. Use with `(sortChange)` or `[(sort)]`. |
 | `multiSort`      | `boolean`          | `false`        | When true, each header click adds or cycles that column without clearing the others. |
 | `pageSize`       | `number \| null`   | `null`         | Rows per page. Omit or `null` to show every row. |
@@ -272,6 +273,7 @@ didi-simple-table {
 | `themeOptions`   | `TableTheme[] \| null` | `null`      | Subset of themes in the picker. Defaults to every packaged theme. |
 | `themeOptionLabels` | `Partial<Record<TableTheme, string>>` | `{}` | Custom names for picker options (for i18n). |
 | `columnCollapse` | `boolean`          | `false`        | When true, users can hide and restore columns from a Columns menu and header controls. |
+| `headerHideButtons` | `'hover' \| 'always' \| 'never'` | `'hover'` | When `columnCollapse` is on: show the header × on hover/focus, keep it always visible, or remove it so users only use the Columns menu. |
 | `hiddenColumns`  | `Array<TableField<T>> \| null` | `null` | Keys of collapsed columns. Use with `(hiddenColumnsChange)` or `[(hiddenColumns)]`. |
 | `responsive`     | `'scroll' \| 'stack'` | `'scroll'` | `scroll` keeps the grid and overflows horizontally. `stack` becomes labeled cards when the table is narrower than `breakpoint`. |
 | `breakpoint`     | `string`           | `'640px'`      | Width at which `stack` and `hideOnMobile` apply. Measured on the table, not the viewport. |
