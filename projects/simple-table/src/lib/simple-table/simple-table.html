@@ -163,7 +163,7 @@
                 </ng-template>
               </ng-template>
               <button
-                *ngIf="canHideColumn(column)"
+                *ngIf="showHeaderHideButton(column)"
                 type="button"
                 class="didi-collapse-button"
                 [attr.aria-label]="hideColumnLabel(column)"

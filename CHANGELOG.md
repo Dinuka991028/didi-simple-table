@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Header hide buttons default to hover/focus (`headerHideButtons="hover"`). Set `'always'` to keep the × visible, or `'never'` to remove it so users only show and hide columns from the Columns menu.
+- Sort arrows default to hover/focus (`sortIcons="hover"`). The active column keeps its arrow. Set `'always'` to show every arrow, or `'never'` to hide them; headers stay clickable.
 - Demo and README highlight starring the repo and sponsoring via GitHub Sponsors.
 - GitHub Pages homepage is the live Angular demo instead of the README.
 - README and npm listing now position the library as a lightweight Angular data table, with discovery keywords and a 1,200-row GitHub Pages demo.

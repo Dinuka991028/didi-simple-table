@@ -1,5 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { PaginationMode, PagerNav, ResponsiveMode, TableColumn, TableQuery, TableSortState, TableTheme } from 'didi-simple-table';
+import {
+  HeaderHideButtons,
+  PaginationMode,
+  PagerNav,
+  ResponsiveMode,
+  SortIcons,
+  TableColumn,
+  TableQuery,
+  TableSortState,
+  TableTheme
+} from 'didi-simple-table';
 
 import { SHOWCASE_COUNT, SHOWCASE_EMPTY, SHOWCASE_ROWS, ShowcaseRow } from './showcase-data';
 
@@ -166,6 +176,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ];
   headerSort: TableSortState<SortPerson> = null;
   multiSort = false;
+  sortIcons: SortIcons = 'hover';
   stickyUsers = USERS;
   pinnedColumns: TableColumn<Staff>[] = [
     { key: 'name', label: 'Name', pinned: true, minWidth: '10rem' },
@@ -210,6 +221,7 @@ export class AppComponent implements OnInit, OnDestroy {
     { key: 'status', label: 'Status' }
   ];
   staffRows = STAFF;
+  headerHideButtons: HeaderHideButtons = 'hover';
   mobileMode: ResponsiveMode = 'stack';
   mobileColumns: TableColumn<Staff>[] = [
     { key: 'name', label: 'Name' },
